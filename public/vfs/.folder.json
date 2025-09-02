@@ -1,6 +1,15 @@
 {
   "data": {
     "files": [
+      {
+        "path": "/",
+        "name": "location",
+        "ext": "",
+        "type": "FOLDER",
+        "size": 0,
+        "time": null,
+        "url": "/plotting-editor-by-ai/vfs//location"
+      }
     ]
   },
   "code": 0

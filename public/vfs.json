@@ -2,7 +2,7 @@
     {
         "type": "static",
         "drive": "demo",
-        "baseURL": "/three-editor-by-ai",
+        "baseURL": "/plotting-editor-by-ai",
         "root": "/vfs"
     },
     {
