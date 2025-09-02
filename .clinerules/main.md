@@ -16,3 +16,4 @@
 - 当前使用的Cesium版本是1.132.0
 - 每个任务开始时都先阅读/CESIUM_CHANGELOG.md文件；
 - 调用Cesium的功能时，注意使用新版写法；
+- Cesium库的对象在Vue环境中都用shallowRef来引用，而不用ref，除非特殊说明。

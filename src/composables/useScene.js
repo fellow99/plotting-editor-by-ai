@@ -1,15 +1,19 @@
 /**
  * 场景管理可组合函数
  * 基于 Cesium 1.132.0 的场景管理，使用新版 API
+ * 使用默认配置文件：DEFAULT_VIEWER_OPTIONS、DEFAULT_CAMERA、DEFAULT_CENTER
  */
 
-import { ref, reactive } from 'vue'
+import { ref, reactive, shallowRef } from 'vue'
 import * as Cesium from 'cesium'
+import DEFAULT_VIEWER_OPTIONS from '../constants/DEFAULT_VIEWER_OPTIONS.js'
+import DEFAULT_CAMERA from '../constants/DEFAULT_CAMERA.js'
+import DEFAULT_CENTER from '../constants/DEFAULT_CENTER.js'
 
-// 全局状态
-const viewer = ref(null)
-const scene = ref(null)
-const camera = ref(null)
+// 全局状态 - Cesium库的对象使用shallowRef
+const viewer = shallowRef(null)
+const scene = shallowRef(null)
+const camera = shallowRef(null)
 const isInitialized = ref(false)
 
 /**
@@ -24,7 +28,6 @@ export function useScene() {
   const initScene = async (container) => {
     try {
       if (isInitialized.value) {
-        console.warn('场景已经初始化')
         return
       }
 
@@ -33,36 +36,12 @@ export function useScene() {
         throw new Error('Container element is required but was not provided')
       }
 
-      console.log('正在初始化Cesium场景，容器:', container)
-
       // 设置 Cesium 访问令牌（如果需要）
       // Cesium.Ion.defaultAccessToken = 'your_access_token_here'
 
-      // 创建 Viewer，使用新版 API
+      // 创建 Viewer，使用默认配置
       viewer.value = new Cesium.Viewer(container, {
-        // 基础配置
-        animation: false,
-        timeline: false,
-        fullscreenButton: false,
-        geocoder: false,
-        homeButton: false,
-        navigationHelpButton: false,
-        sceneModePicker: true,
-        baseLayerPicker: true,
-        vrButton: false,
-        
-        // 地形配置 - 使用默认椭球体地形
-        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
-        
-        // 影像配置 - 使用Cesium默认影像提供程序，避免网络问题
-        imageryProvider: false, // 使用Cesium默认的Bing Maps影像
-        
-        // 渲染配置
-        contextOptions: {
-          webgl: {
-            preserveDrawingBuffer: true
-          }
-        },
+        ...DEFAULT_VIEWER_OPTIONS,
         
         // 性能配置
         requestRenderMode: true,
@@ -80,10 +59,8 @@ export function useScene() {
       setDefaultView()
 
       isInitialized.value = true
-      console.log('Cesium 场景初始化成功')
       
     } catch (error) {
-      console.error('Cesium 场景初始化失败:', error)
       throw error
     }
   }
@@ -117,17 +94,22 @@ export function useScene() {
 
   /**
    * 设置默认视角
+   * 使用DEFAULT_CAMERA和DEFAULT_CENTER配置
    */
   const setDefaultView = () => {
     if (!camera.value) return
 
-    // 设置默认相机位置（北京上空）
+    // 使用默认配置设置相机位置
     camera.value.setView({
-      destination: Cesium.Cartesian3.fromDegrees(116.4074, 39.9042, 10000000),
+      destination: Cesium.Cartesian3.fromDegrees(
+        DEFAULT_CAMERA.position.lng, 
+        DEFAULT_CAMERA.position.lat, 
+        DEFAULT_CAMERA.position.height
+      ),
       orientation: {
-        heading: 0.0,
-        pitch: -Cesium.Math.PI_OVER_TWO,
-        roll: 0.0
+        heading: Cesium.Math.toRadians(DEFAULT_CAMERA.heading),
+        pitch: Cesium.Math.toRadians(DEFAULT_CAMERA.pitch),
+        roll: Cesium.Math.toRadians(DEFAULT_CAMERA.roll)
       }
     })
   }
@@ -142,7 +124,6 @@ export function useScene() {
       scene.value = null
       camera.value = null
       isInitialized.value = false
-      console.log('Cesium 场景已销毁')
     }
   }
 
@@ -225,6 +206,36 @@ export function useScene() {
     return viewer.value.canvas.toDataURL()
   }
 
+  /**
+   * 飞行到默认中心点
+   * 使用DEFAULT_CENTER配置
+   */
+  const flyToDefaultCenter = (options = {}) => {
+    if (!camera.value) return
+
+    const destination = Cesium.Cartesian3.fromDegrees(
+      DEFAULT_CENTER.lng, 
+      DEFAULT_CENTER.lat, 
+      options.height || 10000
+    )
+
+    return camera.value.flyTo({
+      destination,
+      ...options
+    })
+  }
+
+  /**
+   * 获取默认配置
+   */
+  const getDefaultConfigs = () => {
+    return {
+      viewerOptions: DEFAULT_VIEWER_OPTIONS,
+      camera: DEFAULT_CAMERA,
+      center: DEFAULT_CENTER
+    }
+  }
+
   return {
     // 状态
     viewer,
@@ -236,11 +247,13 @@ export function useScene() {
     initScene,
     destroyScene,
     flyTo,
+    flyToDefaultCenter,
     focusEntity,
     addEntity,
     removeEntity,
     clearEntities,
     pickPosition,
-    takeScreenshot
+    takeScreenshot,
+    getDefaultConfigs
   }
 }

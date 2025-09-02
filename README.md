@@ -4,8 +4,7 @@
 本工程完全使用AI自行编写代码。
 
 ## 🎨 截图
-
-待完善
+![截图1](public/images/screenshot01.png)
 
 ## ✅ 主要功能
 
@@ -58,6 +57,9 @@ plotting-editor-by-ai/
 │   │   ├── geometryUtils.js                  # 🔄 几何工具（待实现）
 │   │   ├── fileUtils.js                      # 🔄 文件处理工具（待实现）
 │   ├── constants/                            # 常量定义
+│   │   ├── DEFAULT_VIEWER_OPTIONS.js         # ✅ 默认Viewer配置
+│   │   ├── DEFAULT_CENTER.js                 # ✅ 默认中心点配置（北京坐标）
+│   │   ├── DEFAULT_CAMERA.js                 # ✅ 默认相机配置（引用DEFAULT_CENTER）
 │   ├── App.vue                               # ✅ 根组件（仅负责引入Editor.vue）
 │   ├── Editor.vue                            # ✅ 主编辑器组件（包含全部业务与UI）
 │   ├── main.js                               # ✅ 应用入口
