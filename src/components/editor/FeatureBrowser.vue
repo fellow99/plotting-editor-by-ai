@@ -1,19 +1,10 @@
 <!--
   标绘资源浏览组件
-  功能：展示、搜索、拖拽标绘资源，供地图编辑器使用
-  新语法：Vue3 <script setup>、ref/shallowRef、computed
-  每个ref变量均有用途注释，每个函数均有功能注释
+  功能：展示、拖拽标绘资源，供地图编辑器使用
+  新语法：Vue3 <script setup>
+  每个shallowRef变量均有用途注释，每个函数均有功能注释
 -->
 <script setup>
-import { ref, computed } from 'vue'
-
-/**
- * 当前搜索关键词
- * @type {import('vue').Ref<string>}
- * 用于过滤标绘资源
- */
-const searchKeyword = ref('')
-
 /**
  * 标绘资源数据
  * 用于展示和拖拽
@@ -28,19 +19,6 @@ const plottingResources = [
 ]
 
 /**
- * 过滤后的资源列表
- * 实时根据搜索关键词过滤
- */
-const filteredResources = computed(() => {
-  if (!searchKeyword.value.trim()) return plottingResources
-  const keyword = searchKeyword.value.toLowerCase()
-  return plottingResources.filter(r =>
-    r.name.toLowerCase().includes(keyword) ||
-    r.type.toLowerCase().includes(keyword)
-  )
-})
-
-/**
  * 开始拖拽资源
  * @param {DragEvent} event 拖拽事件
  * @param {object} resource 标绘资源对象
@@ -50,38 +28,13 @@ function startDrag(event, resource) {
   event.dataTransfer.setData('application/json', JSON.stringify(resource))
   event.dataTransfer.effectAllowed = 'copy'
 }
-
-/**
- * 搜索资源（仅做提示，实际已实时过滤）
- */
-function searchResources() {
-  // 实际搜索已由filteredResources实现
-}
-
-/**
- * 清空搜索关键词
- */
-function clearSearch() {
-  searchKeyword.value = ''
-}
 </script>
 
 <template>
   <div class="feature-browser">
-    <div class="search-section">
-      <input
-        v-model="searchKeyword"
-        type="text"
-        placeholder="搜索标绘资源..."
-        class="search-input"
-        @keyup.enter="searchResources"
-      />
-      <button class="search-btn" @click="searchResources">🔍</button>
-      <button class="clear-btn" @click="clearSearch" v-if="searchKeyword">✖</button>
-    </div>
     <div class="resource-grid">
       <div
-        v-for="resource in filteredResources"
+        v-for="resource in plottingResources"
         :key="resource.id"
         class="resource-item"
         draggable="true"
@@ -93,51 +46,12 @@ function clearSearch() {
         <div class="resource-type">{{ resource.type }}</div>
       </div>
     </div>
-    <div v-if="filteredResources.length === 0" class="empty-state">
-      <div class="empty-icon">📭</div>
-      <div class="empty-text">没有找到匹配的资源</div>
-    </div>
   </div>
 </template>
 
 <style scoped>
 .feature-browser {
-  padding: 0 0 16px 0;
-}
-.search-section {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.search-input {
-  flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #555;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  font-size: 12px;
-  outline: none;
-}
-.search-btn {
-  margin-left: 6px;
-  padding: 6px 10px;
-  background: #007acc;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-.clear-btn {
-  margin-left: 4px;
-  padding: 6px 8px;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
+  padding: 8px;
 }
 .resource-grid {
   display: grid;
