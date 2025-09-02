@@ -1,5 +1,5 @@
 /**
- * 场景管理可组合函数
+ * 标绘环境管理可组合函数
  * 使用新版Cesium 1.132.0 API，不依赖ready和readyPromise
  */
 
@@ -12,14 +12,14 @@ import { useEditorConfig } from './useEditorConfig.js' // 引入编辑器配置
 
 // 全局状态 - Cesium库的对象使用shallowRef
 const viewer = shallowRef(null)
-const scene = shallowRef(null)
+const plot = shallowRef(null)
 const camera = shallowRef(null)
 const isInitialized = ref(false)
 
 /**
- * 场景管理可组合函数
+ * 标绘环境管理可组合函数
  */
-export function useScene() {
+export function usePlot() {
   
   /**
    * 初始化 Cesium 场景
@@ -59,8 +59,8 @@ export function useScene() {
       // 创建 Viewer，使用最终配置
       viewer.value = new Cesium.Viewer(container, options)
 
-      // 获取场景和相机引用
-      scene.value = viewer.value.scene
+      // 获取Plot和相机引用
+      plot.value = viewer.value.scene
       camera.value = viewer.value.camera
 
       // 设置鼠标操作逻辑（根据编辑器配置）
@@ -93,14 +93,14 @@ export function useScene() {
    * 配置场景参数
    */
   const configureScene = () => {
-    if (!scene.value) return
+    if (!plot.value) return
 
     // 获取编辑器配置
     const { editorConfig } = useEditorConfig()
 
     // 鼠标操作逻辑配置（根据 editorConfig.controls 设置）
     const controlsConfig = editorConfig.controls
-    const sscController = scene.value.screenSpaceCameraController
+    const sscController = plot.value.screenSpaceCameraController
     if (controlsConfig && sscController) {
       // 缩放事件类型
       sscController.zoomEventTypes = [Cesium.CameraEventType[controlsConfig.zoomEventType] || Cesium.CameraEventType.WHEEL]
@@ -111,27 +111,27 @@ export function useScene() {
     }
 
     // 启用深度测试（根据配置）
-    scene.value.globe.depthTestAgainstTerrain = !!editorConfig.map.depthTest
+    plot.value.globe.depthTestAgainstTerrain = !!editorConfig.map.depthTest
 
     // 配置大气效果
-    scene.value.skyAtmosphere.show = !!editorConfig.map.atmosphere
+    plot.value.skyAtmosphere.show = !!editorConfig.map.atmosphere
 
     // 配置雾效果（始终开启，密度可后续配置）
-    scene.value.fog.enabled = true
-    scene.value.fog.density = 0.0002
+    plot.value.fog.enabled = true
+    plot.value.fog.density = 0.0002
 
     // 配置光照
-    scene.value.globe.enableLighting = !!editorConfig.map.lighting
+    plot.value.globe.enableLighting = !!editorConfig.map.lighting
 
     // 配置地下模式
-    scene.value.underground = !!editorConfig.map.underground
+    plot.value.underground = !!editorConfig.map.underground
 
     // 使用新版 verticalExaggeration 替代 Globe.terrainExaggeration
-    scene.value.verticalExaggeration = 1.0
-    scene.value.verticalExaggerationRelativeHeight = 0.0
+    plot.value.verticalExaggeration = 1.0
+    plot.value.verticalExaggerationRelativeHeight = 0.0
 
     // 配置天空盒（新版 Cesium 需自定义 SkyBox，预留）
-    // scene.value.skyBox.show = !!editorConfig.map.skybox
+    // plot.value.skyBox.show = !!editorConfig.map.skybox
 
     // 配置影像/地形（预留，需在 Viewer 初始化时处理）
     // imagery: editorConfig.map.imagery
@@ -235,7 +235,7 @@ export function useScene() {
     if (!viewer.value) return null
 
     // 优先拾取地形
-    const cartesian = viewer.value.camera.pickEllipsoid(screenPosition, scene.value.globe.ellipsoid)
+    const cartesian = viewer.value.camera.pickEllipsoid(screenPosition, plot.value.globe.ellipsoid)
     if (cartesian) {
       return Cesium.Cartographic.fromCartesian(cartesian)
     }
@@ -285,7 +285,7 @@ export function useScene() {
   return {
     // 状态
     viewer,
-    scene,
+    plot,
     camera,
     isInitialized,
     

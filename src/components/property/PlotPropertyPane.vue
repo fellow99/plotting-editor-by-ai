@@ -1,5 +1,5 @@
 <!--
-  场景属性编辑面板
+  标绘环境属性编辑面板
 -->
 <script setup>
 import { ref, computed, inject, onMounted, watch } from 'vue';
@@ -10,11 +10,11 @@ import 'element-plus/es/components/color-picker/style/css';
 import 'element-plus/es/components/select/style/css';
 import 'element-plus/es/components/option/style/css';
 
-// 注入场景管理器
-const scene = inject('scene');
+// 注入标绘环境管理器
+const plot = inject('plot');
 
 // 响应式数据
-const sceneConfig = ref({
+const plotConfig = ref({
   // 基础设置
   enableLighting: true,
   showSkyBox: true,
@@ -46,66 +46,66 @@ const sceneConfig = ref({
 });
 
 /**
- * 应用场景配置到Cesium viewer
+ * 应用标绘环境配置到Cesium viewer
  */
-function applySceneConfig() {
-  if (!scene?.viewer) return;
+function applyPlotConfig() {
+  if (!plot?.viewer) return;
   
-  const viewer = scene.viewer;
+  const viewer = plot.viewer;
   const cesiumScene = viewer.scene;
   
   try {
     // 基础设置
-    cesiumScene.globe.enableLighting = sceneConfig.value.enableLighting;
-    cesiumScene.skyBox.show = sceneConfig.value.showSkyBox;
-    cesiumScene.skyAtmosphere.show = sceneConfig.value.showSkyAtmosphere;
-    cesiumScene.fog.enabled = sceneConfig.value.enableFog;
+    cesiumScene.globe.enableLighting = plotConfig.value.enableLighting;
+    cesiumScene.skyBox.show = plotConfig.value.showSkyBox;
+    cesiumScene.skyAtmosphere.show = plotConfig.value.showSkyAtmosphere;
+    cesiumScene.fog.enabled = plotConfig.value.enableFog;
     
     // 地形设置 - 使用新版API
-    if (sceneConfig.value.enableTerrain) {
+    if (plotConfig.value.enableTerrain) {
       // TODO: 实现地形提供者设置
     }
-    cesiumScene.verticalExaggeration = sceneConfig.value.verticalExaggeration;
+    cesiumScene.verticalExaggeration = plotConfig.value.verticalExaggeration;
     
     // 阴影设置
-    cesiumScene.shadowMap.enabled = sceneConfig.value.enableShadows;
-    if (sceneConfig.value.enableShadows) {
-      cesiumScene.shadowMap.size = sceneConfig.value.shadowMapSize;
+    cesiumScene.shadowMap.enabled = plotConfig.value.enableShadows;
+    if (plotConfig.value.enableShadows) {
+      cesiumScene.shadowMap.size = plotConfig.value.shadowMapSize;
     }
     
     // 渲染性能设置
-    cesiumScene.maximumRenderTimeChange = sceneConfig.value.maximumRenderTimeChange;
+    cesiumScene.maximumRenderTimeChange = plotConfig.value.maximumRenderTimeChange;
     
     // 大气设置
     if (cesiumScene.skyAtmosphere) {
-      cesiumScene.skyAtmosphere.brightnessShift = sceneConfig.value.atmosphereBrightness - 1.0;
-      cesiumScene.skyAtmosphere.hueShift = sceneConfig.value.atmosphereHueShift;
-      cesiumScene.skyAtmosphere.saturationShift = sceneConfig.value.atmosphereSaturation - 1.0;
+      cesiumScene.skyAtmosphere.brightnessShift = plotConfig.value.atmosphereBrightness - 1.0;
+      cesiumScene.skyAtmosphere.hueShift = plotConfig.value.atmosphereHueShift;
+      cesiumScene.skyAtmosphere.saturationShift = plotConfig.value.atmosphereSaturation - 1.0;
     }
     
     // 相机设置
     if (viewer.scene.screenSpaceCameraController) {
-      viewer.scene.screenSpaceCameraController.enableCollisionDetection = sceneConfig.value.enableCollisionDetection;
-      viewer.scene.screenSpaceCameraController.minimumZoomDistance = sceneConfig.value.minimumZoomDistance;
-      viewer.scene.screenSpaceCameraController.maximumZoomDistance = sceneConfig.value.maximumZoomDistance;
+      viewer.scene.screenSpaceCameraController.enableCollisionDetection = plotConfig.value.enableCollisionDetection;
+      viewer.scene.screenSpaceCameraController.minimumZoomDistance = plotConfig.value.minimumZoomDistance;
+      viewer.scene.screenSpaceCameraController.maximumZoomDistance = plotConfig.value.maximumZoomDistance;
     }
     
   } catch (error) {
-    console.error('应用场景配置时出错:', error);
+    console.error('应用标绘环境配置时出错:', error);
   }
 }
 
 /**
  * 从Cesium viewer读取当前配置
  */
-function loadSceneConfig() {
-  if (!scene?.viewer) return;
+function loadPlotConfig() {
+  if (!plot?.viewer) return;
   
-  const viewer = scene.viewer;
+  const viewer = plot.viewer;
   const cesiumScene = viewer.scene;
   
   try {
-    sceneConfig.value = {
+    plotConfig.value = {
       // 基础设置
       enableLighting: cesiumScene.globe.enableLighting,
       showSkyBox: cesiumScene.skyBox.show,
@@ -136,7 +136,7 @@ function loadSceneConfig() {
       maximumZoomDistance: viewer.scene.screenSpaceCameraController?.maximumZoomDistance ?? 40075017.0
     };
   } catch (error) {
-    console.error('读取场景配置时出错:', error);
+    console.error('读取标绘环境配置时出错:', error);
   }
 }
 
@@ -144,7 +144,7 @@ function loadSceneConfig() {
  * 重置为默认设置
  */
 function resetToDefaults() {
-  sceneConfig.value = {
+  plotConfig.value = {
     enableLighting: true,
     showSkyBox: true,
     showSkyAtmosphere: true,
@@ -163,7 +163,7 @@ function resetToDefaults() {
     minimumZoomDistance: 1.0,
     maximumZoomDistance: 40075017.0
   };
-  applySceneConfig();
+  applyPlotConfig();
 }
 
 // 阴影贴图尺寸选项
@@ -175,37 +175,37 @@ const shadowMapSizes = [
 ];
 
 // 监听配置变化并应用
-watch(sceneConfig, applySceneConfig, { deep: true });
+watch(plotConfig, applyPlotConfig, { deep: true });
 
 // 组件挂载时加载当前配置
 onMounted(() => {
-  loadSceneConfig();
+  loadPlotConfig();
 });
 </script>
 
 <template>
-  <div class="scene-property-pane">
+  <div class="plot-property-pane">
     <div class="property-section">
       <h4 class="section-title">基础设置</h4>
       
       <div class="property-item">
         <label>启用光照</label>
-        <ElSwitch v-model="sceneConfig.enableLighting" />
+        <ElSwitch v-model="plotConfig.enableLighting" />
       </div>
       
       <div class="property-item">
         <label>显示天空盒</label>
-        <ElSwitch v-model="sceneConfig.showSkyBox" />
+        <ElSwitch v-model="plotConfig.showSkyBox" />
       </div>
       
       <div class="property-item">
         <label>显示大气效果</label>
-        <ElSwitch v-model="sceneConfig.showSkyAtmosphere" />
+        <ElSwitch v-model="plotConfig.showSkyAtmosphere" />
       </div>
       
       <div class="property-item">
         <label>启用雾效</label>
-        <ElSwitch v-model="sceneConfig.enableFog" />
+        <ElSwitch v-model="plotConfig.enableFog" />
       </div>
     </div>
 
@@ -214,13 +214,13 @@ onMounted(() => {
       
       <div class="property-item">
         <label>启用地形</label>
-        <ElSwitch v-model="sceneConfig.enableTerrain" />
+        <ElSwitch v-model="plotConfig.enableTerrain" />
       </div>
       
       <div class="property-item">
-        <label>垂直夸张 ({{ sceneConfig.verticalExaggeration.toFixed(1) }})</label>
+        <label>垂直夸张 ({{ plotConfig.verticalExaggeration.toFixed(1) }})</label>
         <ElSlider 
-          v-model="sceneConfig.verticalExaggeration"
+          v-model="plotConfig.verticalExaggeration"
           :min="0.1"
           :max="10.0"
           :step="0.1"
@@ -234,12 +234,12 @@ onMounted(() => {
       
       <div class="property-item">
         <label>启用阴影</label>
-        <ElSwitch v-model="sceneConfig.enableShadows" />
+        <ElSwitch v-model="plotConfig.enableShadows" />
       </div>
       
       <div class="property-item" v-if="sceneConfig.enableShadows">
         <label>阴影贴图尺寸</label>
-        <ElSelect v-model="sceneConfig.shadowMapSize" style="width: 120px;">
+        <ElSelect v-model="plotConfig.shadowMapSize" style="width: 120px;">
           <ElOption
             v-for="size in shadowMapSizes"
             :key="size.value"
@@ -250,9 +250,9 @@ onMounted(() => {
       </div>
       
       <div class="property-item">
-        <label>最大渲染时间变化 ({{ sceneConfig.maximumRenderTimeChange.toFixed(1) }})</label>
+        <label>最大渲染时间变化 ({{ plotConfig.maximumRenderTimeChange.toFixed(1) }})</label>
         <ElSlider 
-          v-model="sceneConfig.maximumRenderTimeChange"
+          v-model="plotConfig.maximumRenderTimeChange"
           :min="0.0"
           :max="5.0"
           :step="0.1"
@@ -261,13 +261,13 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="property-section" v-if="sceneConfig.showSkyAtmosphere">
+    <div class="property-section" v-if="plotConfig.showSkyAtmosphere">
       <h4 class="section-title">大气设置</h4>
       
       <div class="property-item">
-        <label>亮度 ({{ sceneConfig.atmosphereBrightness.toFixed(2) }})</label>
+        <label>亮度 ({{ plotConfig.atmosphereBrightness.toFixed(2) }})</label>
         <ElSlider 
-          v-model="sceneConfig.atmosphereBrightness"
+          v-model="plotConfig.atmosphereBrightness"
           :min="0.0"
           :max="3.0"
           :step="0.01"
@@ -276,9 +276,9 @@ onMounted(() => {
       </div>
       
       <div class="property-item">
-        <label>色相偏移 ({{ sceneConfig.atmosphereHueShift.toFixed(2) }})</label>
+        <label>色相偏移 ({{ plotConfig.atmosphereHueShift.toFixed(2) }})</label>
         <ElSlider 
-          v-model="sceneConfig.atmosphereHueShift"
+          v-model="plotConfig.atmosphereHueShift"
           :min="-1.0"
           :max="1.0"
           :step="0.01"
@@ -287,9 +287,9 @@ onMounted(() => {
       </div>
       
       <div class="property-item">
-        <label>饱和度 ({{ sceneConfig.atmosphereSaturation.toFixed(2) }})</label>
+        <label>饱和度 ({{ plotConfig.atmosphereSaturation.toFixed(2) }})</label>
         <ElSlider 
-          v-model="sceneConfig.atmosphereSaturation"
+          v-model="plotConfig.atmosphereSaturation"
           :min="0.0"
           :max="3.0"
           :step="0.01"
@@ -303,13 +303,13 @@ onMounted(() => {
       
       <div class="property-item">
         <label>启用碰撞检测</label>
-        <ElSwitch v-model="sceneConfig.enableCollisionDetection" />
+        <ElSwitch v-model="plotConfig.enableCollisionDetection" />
       </div>
       
       <div class="property-item">
-        <label>最小缩放距离 ({{ sceneConfig.minimumZoomDistance.toFixed(1) }}m)</label>
+        <label>最小缩放距离 ({{ plotConfig.minimumZoomDistance.toFixed(1) }}m)</label>
         <ElSlider 
-          v-model="sceneConfig.minimumZoomDistance"
+          v-model="plotConfig.minimumZoomDistance"
           :min="0.1"
           :max="1000.0"
           :step="0.1"
@@ -322,7 +322,7 @@ onMounted(() => {
       <button class="action-btn" @click="resetToDefaults">
         重置默认
       </button>
-      <button class="action-btn" @click="loadSceneConfig">
+      <button class="action-btn" @click="loadPlotConfig">
         刷新配置
       </button>
     </div>
@@ -330,7 +330,7 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.scene-property-pane {
+.plot-property-pane {
   padding: 16px;
   color: #fff;
   background: #2a2a2a;

@@ -1,27 +1,27 @@
 <!--
- * 主场景视图组件
- * 基于 Cesium 的地图场景容器，支持拖拽添加标绘对象
+ * 标绘环境主视图组件
+ * 基于 Cesium 的 Plot容器，支持拖拽添加标绘对象
 -->
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as Cesium from 'cesium'
-import { useScene } from '../../composables/useScene'
+import { usePlot } from '../../composables/usePlot'
 
 // 响应式数据
 const cesiumContainer = ref(null)
 const isLoading = ref(true)
 const isDragOver = ref(false)
 
-// 使用场景管理
+// 使用标绘环境管理
 const { 
   viewer, 
-  scene, 
+  plot, 
   camera, 
   initScene, 
   destroyScene,
   addEntity,
   pickPosition 
-} = useScene()
+} = usePlot()
 
 // 生命周期
 onMounted(async () => {

@@ -8,25 +8,25 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import 'element-plus/es/components/message/style/css';
 import 'element-plus/es/components/message-box/style/css';
 
-// 注入场景管理器和对象选择
-const scene = inject('scene');
+ // 注入标绘环境管理器和对象选择
+const plot = inject('plot');
 const objectSelection = inject('objectSelection');
 
 // 定义事件
 const emit = defineEmits(['delete-selected']);
 
 // 响应式数据
-const sceneObjects = ref([]);
+const plotObjects = ref([]);
 const expandedFolders = ref(new Set());
 
 /**
- * 刷新场景对象列表
+ * 刷新标绘对象列表
  */
 function refreshObjects() {
-  if (!scene?.viewer?.scene) return;
+  if (!plot?.viewer?.scene) return;
   
-  const entities = scene.viewer.entities.values;
-  sceneObjects.value = entities.map(entity => ({
+  const entities = plot.viewer.entities.values;
+  plotObjects.value = entities.map(entity => ({
     id: entity.id,
     name: entity.name || `Entity ${entity.id.substr(0, 8)}`,
     type: getEntityType(entity),
@@ -123,7 +123,7 @@ function deleteObject(obj) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    scene.viewer.entities.remove(obj.entity);
+    plot.viewer.entities.remove(obj.entity);
     refreshObjects();
     ElMessage.success('对象已删除');
   }).catch(() => {});
@@ -150,10 +150,10 @@ function renameObject(obj) {
  * 聚焦到对象
  */
 function focusObject(obj) {
-  if (scene.viewer && obj.entity) {
-    scene.viewer.trackedEntity = obj.entity;
+  if (plot.viewer && obj.entity) {
+    plot.viewer.trackedEntity = obj.entity;
     setTimeout(() => {
-      scene.viewer.trackedEntity = undefined;
+      plot.viewer.trackedEntity = undefined;
     }, 3000);
   }
 }
@@ -165,8 +165,8 @@ let entityRemovedListener = null;
 onMounted(() => {
   refreshObjects();
   
-  if (scene?.viewer?.entities) {
-    entityAddedListener = scene.viewer.entities.collectionChanged.addEventListener(() => {
+  if (plot?.viewer?.entities) {
+    entityAddedListener = plot.viewer.entities.collectionChanged.addEventListener(() => {
       refreshObjects();
     });
   }
@@ -211,13 +211,13 @@ const selectedObjectIds = computed(() => {
     </div>
 
     <div class="object-list">
-      <div v-if="sceneObjects.length === 0" class="empty-state">
+      <div v-if="plotObjects.length === 0" class="empty-state">
         <div class="empty-icon">📭</div>
-        <div class="empty-text">场景中暂无对象</div>
+        <div class="empty-text">标绘环境中暂无对象</div>
       </div>
 
       <div 
-        v-for="obj in sceneObjects"
+        v-for="obj in plotObjects"
         :key="obj.id"
         :class="[
           'object-item',
@@ -273,7 +273,7 @@ const selectedObjectIds = computed(() => {
 
     <div class="inspector-footer">
       <div class="object-count">
-        共 {{ sceneObjects.length }} 个对象
+        共 {{ plotObjects.length }} 个对象
       </div>
     </div>
   </div>

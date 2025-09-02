@@ -8,11 +8,11 @@
 
 ## ✅ 主要功能
 
-- 支持地图标绘（点、线、面、模型等多类型），可在三维场景中自由绘制和编辑；
+- 支持地图标绘（点、线、面、模型等多类型），可在三维标绘环境中自由绘制和编辑；
 - 资源面板拖拽标绘对象到地图，自动计算地理坐标；
 - 标绘对象属性可视化编辑，支持基础属性和自定义扩展属性；
 - 集成虚拟文件系统（VFS），支持标绘资源的管理、导入导出；
-- 场景管理：支持多场景切换、实体添加/删除、地理坐标拾取；
+- 标绘环境管理：支持多标绘环境切换、实体添加/删除、地理坐标拾取；
 - 标绘数据采用GeoJSON标准并扩展专用属性，便于数据交换与兼容；
 - 支持地形、大气、光照等多种Cesium渲染效果；
 - 完全AI驱动开发，代码自动生成，便于快速迭代和扩展。
@@ -45,19 +45,19 @@ plotting-editor-by-ai/
 │   │   │   ├── VfsFileBrowser.vue            # 虚拟文件系统面板
 │   │   │   ├── Inspector.vue                 # 对象检查器
 │   │   ├── property/                         # 各种属性编辑组件
-│   │   │   ├── ScenePropertyPane.vue         # 场景属性编辑面板
+│   │   │   ├── PlotPropertyPane.vue          # 标绘环境属性编辑面板
 │   │   │   ├── BasePropertyPane.vue          # 对象基础属性编辑面板
 │   │   ├── dialog/                           # 各类对话框组件
 │   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框
-│   │   ├── scene/                            # 3D 场景组件
-│   │   │   ├── SceneViewer.vue               # 主场景视图
+│   │   ├── plot/                             # 3D 标绘环境组件
+│   │   │   ├── PlotViewer.vue                # 标绘环境主视图
 │   ├── composables/                          # Vue Composition API 可组合函数
-│   │   ├── useScene.js                       # 场景管理
+│   │   ├── usePlot.js                        # 标绘环境管理
 │   │   ├── useObjectSelection.js             # 对象选择功能
 │   │   ├── useAssets.js                      # 资源管理
 │   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
 │   ├── core/                                 # 核心 Cesium 逻辑
-│   │   ├── SceneManager.js                   # 场景管理器
+│   │   ├── PlotManager.js                    # 标绘环境管理器
 │   │   ├── ObjectManager.js                  # 对象管理器
 │   ├── services/                             # 数据请求和外部接口
 │   │   ├── static-drive-api.js               # 静态文件系统封装
@@ -157,18 +157,18 @@ plotting-editor-by-ai/
 }
 ```
 
-- 场景管理器（SceneManager.js）支持以下数据操作流程：
-  - clearScene(): 清空场景所有实体
-  - exportScene(): 导出场景数据为GeoJSON+userData结构，Feature和FeatureCollection均支持userData字段，便于扩展和编辑器专用信息存储
-  - loadScene(json): 加载GeoJSON结构场景数据，根据json内容重建场景实体
+- 标绘环境管理器（PlotManager.js）支持以下数据操作流程：
+  - clearPlot(): 清空标绘环境所有实体
+  - exportPlot(): 导出标绘环境数据为GeoJSON+userData结构，Feature和FeatureCollection均支持userData字段，便于扩展和编辑器专用信息存储
+  - loadPlot(json): 加载GeoJSON结构标绘环境数据，根据json内容重建实体
 
-### 场景管理 (useScene.js)
-- 基于 Cesium 1.132.0 的场景初始化和管理
+### 标绘环境管理 (usePlot.js)
+- 基于 Cesium 1.132.0 的标绘环境初始化和管理
 - 支持实体的添加、删除和管理
 - 提供地理坐标拾取功能
 - 集成地形、大气、光照等渲染效果
 
-### 拖拽标绘 (SceneViewer.vue)
+### 拖拽标绘 (PlotViewer.vue)
 - 支持从资源面板拖拽标绘对象到地图
 - 自动计算放置位置的地理坐标
 - 支持点、线、面、模型等多种标绘类型

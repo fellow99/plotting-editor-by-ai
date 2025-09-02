@@ -6,8 +6,8 @@
 import * as Cesium from 'cesium';
 
 export class ObjectManager {
-  constructor(sceneManager) {
-    this.sceneManager = sceneManager;
+  constructor(plotManager) {
+    this.plotManager = plotManager;
     this.objects = new Map(); // 对象缓存 ID -> Entity
     this.objectMetadata = new Map(); // 对象元数据 ID -> metadata
     this.eventCallbacks = new Map(); // 事件回调
@@ -265,12 +265,12 @@ export class ObjectManager {
    * 添加实体到场景
    */
   addEntity(entityOptions) {
-    if (!this.sceneManager?.viewer) {
-      throw new Error('场景管理器未初始化');
+    if (!this.plotManager?.viewer) {
+      throw new Error('标绘环境管理器未初始化');
     }
 
     try {
-      const entity = this.sceneManager.viewer.entities.add(entityOptions);
+      const entity = this.plotManager.viewer.entities.add(entityOptions);
       
       // 缓存对象
       this.objects.set(entity.id, entity);
@@ -297,10 +297,10 @@ export class ObjectManager {
    * 移除实体
    */
   removeEntity(entity) {
-    if (!entity || !this.sceneManager?.viewer) return false;
+    if (!entity || !this.plotManager?.viewer) return false;
 
     try {
-      const result = this.sceneManager.viewer.entities.remove(entity);
+      const result = this.plotManager.viewer.entities.remove(entity);
       
       if (result) {
         // 清理缓存
@@ -346,10 +346,10 @@ export class ObjectManager {
    * 清空所有实体
    */
   clearAll() {
-    if (!this.sceneManager?.viewer) return;
+    if (!this.plotManager?.viewer) return;
 
     try {
-      this.sceneManager.viewer.entities.removeAll();
+      this.plotManager.viewer.entities.removeAll();
       this.objects.clear();
       this.objectMetadata.clear();
       
@@ -590,6 +590,6 @@ export class ObjectManager {
   destroy() {
     this.clearAll();
     this.eventCallbacks.clear();
-    this.sceneManager = null;
+    this.plotManager = null;
   }
 }

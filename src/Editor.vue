@@ -3,7 +3,7 @@
  * 基于 Cesium 的地图标绘编辑器主界面，包含全部业务与UI
 -->
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, provide } from 'vue'
 import { ElMessage } from 'element-plus'
 
 // 导入组件
@@ -11,14 +11,22 @@ import Toolbar from './components/editor/Toolbar.vue'
 import ResourcePanel from './components/editor/ResourcePanel.vue'
 import PropertyPanel from './components/editor/PropertyPanel.vue'
 import EditorFooter from './components/editor/EditorFooter.vue'
-import SceneViewer from './components/scene/SceneViewer.vue'
+import PlotViewer from './components/plot/PlotViewer.vue'
 
 // 导入可组合函数
 import { useEditorConfig } from './composables/useEditorConfig'
+import { usePlot } from './composables/usePlot'
+import { useObjectSelection } from './composables/useObjectSelection'
 
 // 响应式数据
 const leftPanelVisible = ref(true)
 const rightPanelVisible = ref(true)
+
+// 标绘环境和对象选择 provide 注入
+const plotApi = usePlot()
+const objectSelectionApi = useObjectSelection()
+provide('plot', plotApi)
+provide('objectSelection', objectSelectionApi)
 
 // 使用可组合函数
 const {
@@ -28,11 +36,11 @@ const {
 
 // 生命周期
 onMounted(() => {
-  // 场景初始化由SceneViewer组件自己处理
+  // 标绘环境初始化由PlotViewer组件自己处理
 })
 
 onUnmounted(() => {
-  // 场景销毁由SceneViewer组件自己处理
+  // 标绘环境销毁由PlotViewer组件自己处理
 })
 
 // 方法
@@ -83,7 +91,7 @@ const handleDragOver = (event) => {
       
       <!-- 中央地图容器 -->
       <div class="map-container">
-        <SceneViewer />
+        <PlotViewer />
       </div>
       
       <!-- 右侧属性面板 -->

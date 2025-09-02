@@ -1,14 +1,15 @@
 <!--
  * 编辑器底部状态栏组件
  * 显示当前状态信息、坐标、相机信息等
+ * 标绘环境底部状态栏，管理Plot相关状态
 -->
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import * as Cesium from 'cesium'
-import { useScene } from '../../composables/useScene'
+import { usePlot } from '../../composables/usePlot'
 
-// 使用场景管理
-const { viewer, camera, isInitialized } = useScene()
+// 使用标绘环境管理
+const { viewer, camera, isInitialized } = usePlot()
 
 // 响应式数据
 const mousePosition = ref({ x: 0, y: 0 })
@@ -149,9 +150,9 @@ const handleMouseMove = (event) => {
 // 计算属性
 const statusText = computed(() => {
   if (!isInitialized.value) {
-    return '场景未初始化'
+    return '标绘环境未初始化'
   }
-  return '场景已就绪'
+  return '标绘环境已就绪'
 })
 
 const coordinateText = computed(() => {
