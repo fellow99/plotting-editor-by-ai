@@ -40,8 +40,9 @@ plotting-editor-by-ai/
 │   │   │   ├── PropertyPanel.vue             # 属性面板
 │   │   │   ├── Toolbar.vue                   # 工具栏
 │   │   │   ├── EditorFooter.vue              # 编辑器底部状态栏
-│   │   │   ├── ResourcePanel.vue             # 资源面板（文件系统tab集成VfsFilePanel.vue）
-│   │   │   ├── VfsFilePanel.vue              # 虚拟文件系统面板
+│   │   │   ├── ResourcePanel.vue             # 资源面板
+│   │   │   ├── FeatureBrowser.vue            # 标绘资源浏览组件
+│   │   │   ├── VfsFileBrowser.vue            # 虚拟文件系统面板
 │   │   │   ├── Inspector.vue                 # 对象检查器
 │   │   ├── property/                         # 各种属性编辑组件
 │   │   │   ├── ScenePropertyPane.vue         # 场景属性编辑面板
@@ -49,7 +50,7 @@ plotting-editor-by-ai/
 │   │   ├── dialog/                           # 各类对话框组件
 │   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框
 │   │   ├── scene/                            # 3D 场景组件
-│   │   │   ├── SceneViewer.vue               # 主场景视图（基于 Cesium）
+│   │   │   ├── SceneViewer.vue               # 主场景视图
 │   ├── composables/                          # Vue Composition API 可组合函数
 │   │   ├── useScene.js                       # 场景管理
 │   │   ├── useObjectSelection.js             # 对象选择功能
