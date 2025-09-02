@@ -5,15 +5,15 @@
  * 
  * 标绘数据结构采用GeoJSON标准，并在Feature和FeatureCollection对象上扩展userData字段用于存储编辑器专用附加信息。
  * 新增函数：
- * - clearScene(): 清空场景所有实体
- * - exportScene(): 导出场景数据为GeoJSON+userData结构
- * - loadScene(json): 加载GeoJSON结构场景数据并重建场景
+ * - clearPlot(): 清空场景所有实体
+ * - exportPlot(): 导出场景数据为GeoJSON+userData结构
+ * - loadPlot(json): 加载GeoJSON结构场景数据并重建场景
  */
 import * as Cesium from 'cesium';
 import { DEFAULT_VIEWER_OPTIONS } from '../constants/DEFAULT_VIEWER_OPTIONS.js';
 import { DEFAULT_CAMERA } from '../constants/DEFAULT_CAMERA.js';
 
-export class SceneManager {
+export class PlotManager {
   constructor() {
     this.viewer = null;
     this.scene = null;
@@ -364,7 +364,7 @@ export class SceneManager {
    * 清空场景所有实体
    * 用于场景重置
    */
-  clearScene() {
+  clearPlot() {
     if (!this.viewer) return;
     try {
       this.viewer.entities.removeAll();
@@ -378,7 +378,7 @@ export class SceneManager {
    * 导出场景数据为GeoJSON+userData结构
    * @returns {Object} GeoJSON FeatureCollection
    */
-  exportScene() {
+  exportPlot() {
     if (!this.viewer) return null;
     try {
       // 构建GeoJSON FeatureCollection
@@ -483,7 +483,7 @@ export class SceneManager {
    * 加载GeoJSON结构场景数据并重建场景
    * @param {Object} geojson - 标绘数据
    */
-  loadScene(geojson) {
+  loadPlot(geojson) {
     if (!this.viewer || !geojson || geojson.type !== 'FeatureCollection') return;
     try {
       // 清空现有实体
