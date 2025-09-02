@@ -49,10 +49,10 @@ plotting-editor-by-ai/
 │   │   │   ├── BasePropertyPane.vue          # 对象基础属性编辑面板
 │   │   ├── dialog/                           # 各类对话框组件
 │   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框
-│   │   ├── plot/                             # 3D 标绘环境组件
-│   │   │   ├── PlotViewer.vue                # 标绘环境主视图
+│   │   ├── cesium/                           # 3D 标绘环境组件
+│   │   │   ├── CesiumViewer.vue              # 地图环境主视图
 │   ├── composables/                          # Vue Composition API 可组合函数
-│   │   ├── usePlot.js                        # 标绘环境管理
+│   │   ├── useViewer.js                      # Cesium Viewer对象管理
 │   │   ├── useObjectSelection.js             # 对象选择功能
 │   │   ├── useAssets.js                      # 资源管理
 │   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
@@ -162,7 +162,7 @@ plotting-editor-by-ai/
   - exportPlot(): 导出标绘环境数据为GeoJSON+userData结构，Feature和FeatureCollection均支持userData字段，便于扩展和编辑器专用信息存储
   - loadPlot(json): 加载GeoJSON结构标绘环境数据，根据json内容重建实体
 
-### 标绘环境管理 (usePlot.js)
+### 标绘环境管理 (useViewer.js)
 - 基于 Cesium 1.132.0 的标绘环境初始化和管理
 - 支持实体的添加、删除和管理
 - 提供地理坐标拾取功能

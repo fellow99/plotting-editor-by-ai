@@ -5,7 +5,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import * as Cesium from 'cesium'
-import { usePlot } from '../../composables/usePlot'
+import { useViewer } from '../../composables/useViewer'
 
 // 响应式数据
 const cesiumContainer = ref(null)
@@ -15,43 +15,43 @@ const isDragOver = ref(false)
 // 使用标绘环境管理
 const { 
   viewer, 
-  plot, 
+  scene, 
   camera, 
-  initScene, 
-  destroyScene,
+  initViewer, 
+  destroyViewer,
   addEntity,
   pickPosition 
-} = usePlot()
+} = useViewer()
 
 // 生命周期
 onMounted(async () => {
   try {
     await nextTick()
     if (cesiumContainer.value) {
-      await initScene(cesiumContainer.value)
+      await initViewer(cesiumContainer.value)
       isLoading.value = false
       
-      // 设置场景事件监听
-      setupSceneEvents()
+      // 设置事件监听
+      setupEvents()
     } else {
-      console.error('cesiumContainer.value 为 null，无法初始化场景')
+      console.error('cesiumContainer.value 为 null，无法初始化Viewer')
       isLoading.value = false
     }
   } catch (error) {
-    console.error('场景初始化失败:', error)
+    console.error('Viewer初始化失败:', error)
     isLoading.value = false
   }
 })
 
 onUnmounted(() => {
-  destroyScene()
+  destroyViewer()
 })
 
 // 方法
 /**
  * 设置场景事件监听
  */
-const setupSceneEvents = () => {
+const setupEvents = () => {
   if (!viewer.value) return
 
   // 鼠标点击事件

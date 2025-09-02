@@ -4,18 +4,17 @@
 -->
 <script setup>
 import { ref, onMounted, onUnmounted, provide } from 'vue'
-import { ElMessage } from 'element-plus'
 
 // 导入组件
 import Toolbar from './components/editor/Toolbar.vue'
 import ResourcePanel from './components/editor/ResourcePanel.vue'
 import PropertyPanel from './components/editor/PropertyPanel.vue'
 import EditorFooter from './components/editor/EditorFooter.vue'
-import PlotViewer from './components/plot/PlotViewer.vue'
+import CesiumViewer from './components/cesium/CesiumViewer.vue'
 
 // 导入可组合函数
 import { useEditorConfig } from './composables/useEditorConfig'
-import { usePlot } from './composables/usePlot'
+import { useViewer } from './composables/useViewer'
 import { useObjectSelection } from './composables/useObjectSelection'
 
 // 响应式数据
@@ -23,7 +22,7 @@ const leftPanelVisible = ref(true)
 const rightPanelVisible = ref(true)
 
 // 标绘环境和对象选择 provide 注入
-const plotApi = usePlot()
+const plotApi = useViewer()
 const objectSelectionApi = useObjectSelection()
 provide('plot', plotApi)
 provide('objectSelection', objectSelectionApi)
@@ -91,7 +90,7 @@ const handleDragOver = (event) => {
       
       <!-- 中央地图容器 -->
       <div class="map-container">
-        <PlotViewer />
+        <CesiumViewer />
       </div>
       
       <!-- 右侧属性面板 -->

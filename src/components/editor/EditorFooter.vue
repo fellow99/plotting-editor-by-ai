@@ -6,10 +6,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import * as Cesium from 'cesium'
-import { usePlot } from '../../composables/usePlot'
+import { useViewer } from '../../composables/useViewer'
 
 // 使用标绘环境管理
-const { viewer, camera, isInitialized } = usePlot()
+const { viewer, camera, isInitialized } = useViewer()
 
 // 响应式数据
 const mousePosition = ref({ x: 0, y: 0 })
