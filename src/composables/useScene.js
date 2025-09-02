@@ -28,29 +28,34 @@ export function useScene() {
         return
       }
 
+      // 验证容器参数
+      if (!container) {
+        throw new Error('Container element is required but was not provided')
+      }
+
+      console.log('正在初始化Cesium场景，容器:', container)
+
       // 设置 Cesium 访问令牌（如果需要）
       // Cesium.Ion.defaultAccessToken = 'your_access_token_here'
 
       // 创建 Viewer，使用新版 API
-      viewer.value = new Cesium.Viewer(container || 'cesiumContainer', {
+      viewer.value = new Cesium.Viewer(container, {
         // 基础配置
         animation: false,
         timeline: false,
         fullscreenButton: false,
         geocoder: false,
-        homeButton: true,
+        homeButton: false,
         navigationHelpButton: false,
         sceneModePicker: true,
         baseLayerPicker: true,
         vrButton: false,
         
-        // 地形配置
-        terrainProvider: Cesium.createWorldTerrain(),
+        // 地形配置 - 使用默认椭球体地形
+        terrainProvider: new Cesium.EllipsoidTerrainProvider(),
         
-        // 影像配置 - 使用新版 baseLayer 替代 imageryProvider
-        baseLayer: Cesium.ImageryLayer.fromProviderAsync(
-          Cesium.createWorldImageryAsync()
-        ),
+        // 影像配置 - 使用Cesium默认影像提供程序，避免网络问题
+        imageryProvider: false, // 使用Cesium默认的Bing Maps影像
         
         // 渲染配置
         contextOptions: {

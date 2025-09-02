@@ -16,7 +16,11 @@ export default defineConfig({
   plugins: [
     vue(),
     viteStaticCopy({
-      targets: []
+      targets: [
+        {
+          src: 'node_modules/cesium/Build/Cesium/**/*',
+          dest: 'Cesium'
+        }]
     })
   ],
 })

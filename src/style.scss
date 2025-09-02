@@ -73,6 +73,20 @@ html, body {
   overflow: hidden;
 }
 
+/* Cesium 容器样式 */
+.cesium-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* 隐藏Cesium版权信息 */
+.cesium-widget-credits {
+  display: none !important;
+}
+
 /* 底部状态栏 */
 .editor-footer {
   height: 30px;

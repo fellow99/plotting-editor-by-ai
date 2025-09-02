@@ -4,6 +4,7 @@
 -->
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import * as Cesium from 'cesium'
 import { useScene } from '../../composables/useScene'
 
 // 使用场景管理

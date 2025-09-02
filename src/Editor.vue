@@ -14,7 +14,6 @@ import EditorFooter from './components/editor/EditorFooter.vue'
 import SceneViewer from './components/scene/SceneViewer.vue'
 
 // 导入可组合函数
-import { useScene } from './composables/useScene'
 import { useEditorConfig } from './composables/useEditorConfig'
 
 // 响应式数据
@@ -22,31 +21,20 @@ const leftPanelVisible = ref(true)
 const rightPanelVisible = ref(true)
 
 // 使用可组合函数
-const { 
-  scene, 
-  viewer, 
-  initScene, 
-  destroyScene 
-} = useScene()
-
 const {
   editorConfig,
   updateConfig
 } = useEditorConfig()
 
 // 生命周期
-onMounted(async () => {
-  try {
-    await initScene()
-    ElMessage.success('地图场景初始化成功')
-  } catch (error) {
-    console.error('场景初始化失败:', error)
-    ElMessage.error('地图场景初始化失败')
-  }
+onMounted(() => {
+  // 场景初始化由SceneViewer组件自己处理
+  console.log('Editor组件已挂载')
 })
 
 onUnmounted(() => {
-  destroyScene()
+  // 场景销毁由SceneViewer组件自己处理
+  console.log('Editor组件已卸载')
 })
 
 // 方法

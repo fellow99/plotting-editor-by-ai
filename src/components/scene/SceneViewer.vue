@@ -4,6 +4,7 @@
 -->
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import * as Cesium from 'cesium'
 import { useScene } from '../../composables/useScene'
 
 // 响应式数据
@@ -26,12 +27,18 @@ const {
 onMounted(async () => {
   try {
     await nextTick()
+    console.log('SceneViewer onMounted, cesiumContainer.value:', cesiumContainer.value)
+    
     if (cesiumContainer.value) {
+      console.log('容器元素存在，开始初始化场景')
       await initScene(cesiumContainer.value)
       isLoading.value = false
       
       // 设置场景事件监听
       setupSceneEvents()
+    } else {
+      console.error('cesiumContainer.value 为 null，无法初始化场景')
+      isLoading.value = false
     }
   } catch (error) {
     console.error('场景初始化失败:', error)
@@ -270,7 +277,7 @@ const addModelEntity = (position, data) => {
     <!-- Cesium 容器 -->
     <div 
       ref="cesiumContainer" 
-      class="cesium-container"
+      class="cesium-container cesium-viewer"
       :class="{ 'drag-over': isDragOver }"
       @dragenter="handleDragEnter"
       @dragleave="handleDragLeave"
