@@ -1,0 +1,26 @@
+{
+  "name": "plotting-editor-by-ai",
+  "description": "A Map plotting editor built with Cesium and Vue.js, powered by AI",
+  "private": false,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cesium": "^1.132.0",
+    "dayjs": "^1.11.13",
+    "element-plus": "^2.10.5",
+    "lodash": "^4.17.21",
+    "mime": "^4.0.7",
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "sass": "^1.90.0",
+    "vite": "^7.0.4",
+    "vite-plugin-static-copy": "^3.1.1"
+  }
+}
