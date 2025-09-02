@@ -43,6 +43,9 @@ export function useScene() {
       viewer.value = new Cesium.Viewer(container, {
         ...DEFAULT_VIEWER_OPTIONS,
         
+        // 影像配置 - 不加载默认影像
+        imageryProvider: false,
+        
         // 性能配置
         requestRenderMode: true,
         maximumRenderTimeChange: Infinity

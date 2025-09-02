@@ -30,41 +30,41 @@ plotting-editor-by-ai/
 ├── src/
 │   ├── components/                           # Vue 组件
 │   │   ├── editor/                           # 编辑器 UI 组件
-│   │   │   ├── PropertyPanel.vue             # ✅ 属性面板
-│   │   │   ├── Toolbar.vue                   # ✅ 工具栏
-│   │   │   ├── EditorFooter.vue              # ✅ 编辑器底部状态栏
-│   │   │   ├── ResourcePanel.vue             # ✅ 资源面板
-│   │   │   ├── VfsFilePanel.vue              # 🔄 虚拟文件系统面板（待实现）
-│   │   │   ├── Inspector.vue                 # 🔄 对象检查器（待实现）
+│   │   │   ├── PropertyPanel.vue             # 属性面板
+│   │   │   ├── Toolbar.vue                   # 工具栏
+│   │   │   ├── EditorFooter.vue              # 编辑器底部状态栏
+│   │   │   ├── ResourcePanel.vue             # 资源面板
+│   │   │   ├── VfsFilePanel.vue              # 虚拟文件系统面板
+│   │   │   ├── Inspector.vue                 # 对象检查器
 │   │   ├── property/                         # 各种属性编辑组件
-│   │   │   ├── ScenePropertyPane.vue         # 🔄 场景属性编辑面板（待实现）
-│   │   │   ├── BasePropertyPane.vue          # 🔄 对象基础属性编辑面板（待实现）
+│   │   │   ├── ScenePropertyPane.vue         # 场景属性编辑面板
+│   │   │   ├── BasePropertyPane.vue          # 对象基础属性编辑面板
 │   │   ├── dialog/                           # 各类对话框组件
 │   │   ├── scene/                            # 3D 场景组件
-│   │   │   ├── SceneViewer.vue               # ✅ 主场景视图（基于 Cesium）
+│   │   │   ├── SceneViewer.vue               # 主场景视图（基于 Cesium）
 │   ├── composables/                          # Vue Composition API 可组合函数
-│   │   ├── useScene.js                       # ✅ 场景管理（Cesium 1.132.0）
-│   │   ├── useObjectSelection.js             # 🔄 对象选择功能（待实现）
-│   │   ├── useAssets.js                      # 🔄 资源管理（待实现）
-│   │   ├── useEditorConfig.js                # ✅ 编辑器配置响应式状态与操作方法
-│   │   ├── static-drive-api.js               # ✅ 静态文件系统封装
-│   │   ├── vfs-service.js                    # 🔄 虚拟文件系统服务（待实现）
+│   │   ├── useScene.js                       # 场景管理（Cesium 1.132.0）
+│   │   ├── useObjectSelection.js             # 对象选择功能
+│   │   ├── useAssets.js                      # 资源管理
+│   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
+│   │   ├── static-drive-api.js               # 静态文件系统封装
+│   │   ├── vfs-service.js                    # 虚拟文件系统服务
 │   ├── core/                                 # 核心 Cesium 逻辑
-│   │   ├── SceneManager.js                   # 🔄 场景管理器（待实现）
-│   │   ├── ObjectManager.js                  # 🔄 对象管理器（待实现）
+│   │   ├── SceneManager.js                   # 场景管理器
+│   │   ├── ObjectManager.js                  # 对象管理器
 │   ├── utils/                                # 工具函数
-│   │   ├── mathUtils.js                      # 🔄 数学工具（待实现）
-│   │   ├── geometryUtils.js                  # 🔄 几何工具（待实现）
-│   │   ├── fileUtils.js                      # 🔄 文件处理工具（待实现）
+│   │   ├── mathUtils.js                      # 数学工具
+│   │   ├── geometryUtils.js                  # 几何工具
+│   │   ├── fileUtils.js                      # 文件处理工具
 │   ├── constants/                            # 常量定义
-│   │   ├── DEFAULT_VIEWER_OPTIONS.js         # ✅ 默认Viewer配置
-│   │   ├── DEFAULT_CENTER.js                 # ✅ 默认中心点配置（北京坐标）
-│   │   ├── DEFAULT_CAMERA.js                 # ✅ 默认相机配置（引用DEFAULT_CENTER）
-│   ├── App.vue                               # ✅ 根组件（仅负责引入Editor.vue）
-│   ├── Editor.vue                            # ✅ 主编辑器组件（包含全部业务与UI）
-│   ├── main.js                               # ✅ 应用入口
-│   ├── main-func.js                          # ✅ 应用入口文件相关的功能函数
-│   ├── style.scss                            # ✅ 全局样式
+│   │   ├── DEFAULT_VIEWER_OPTIONS.js         # 默认Viewer配置
+│   │   ├── DEFAULT_CENTER.js                 # 默认中心点配置（北京坐标）
+│   │   ├── DEFAULT_CAMERA.js                 # 默认相机配置（引用DEFAULT_CENTER）
+│   ├── App.vue                               # 根组件（仅负责引入Editor.vue）
+│   ├── Editor.vue                            # 主编辑器组件（包含全部业务与UI）
+│   ├── main.js                               # 应用入口
+│   ├── main-func.js                          # 应用入口文件相关的功能函数
+│   ├── style.scss                            # 全局样式
 ├── public/                                   # 存放无需构建的静态资源
 │   ├── images/                               # 图片资源目录
 │   ├── vfs/                                  # 静态资源目录（虚拟文件系统）
@@ -77,9 +77,7 @@ plotting-editor-by-ai/
 ├── vite.config.js                            # Vite 配置
 ├── README.md                                 # 项目说明
 ├── CESIUM_CHANGELOG.md                       # Cesium 版本更新日志
-├── .git/                                     # git版本管理目录
 
-✅ 已完成  🔄 待实现
 ```
 
 ## 🏗️ 架构设计
@@ -118,6 +116,36 @@ plotting-editor-by-ai/
 
 ## 重要逻辑
 
+### 数据结构
+- 使用GeoJSON作为标绘信息的数据结构
+- 在GeoJSON数据结构的基础上增加一些该编辑器专用的附加信息
+标绘信息数据结构如下：
+```js
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": { // 遵循GeoJSON标准的地理信息
+                "type": "Point",
+                "coordinates": [116.4, 39.9]
+            },
+            "properties": {
+                "id": "ID",
+                "name": "名称",
+                ...<遵循GeoJSON标准的要素属性信息>
+            },
+            "userData": {
+                ...<编辑器专用的要素附加信息>
+            }
+        }
+    ],
+    "userData": {
+        ...<编辑器专用的标绘附加信息>
+    }
+}
+```
+
 ### 场景管理 (useScene.js)
 - 基于 Cesium 1.132.0 的场景初始化和管理
 - 支持实体的添加、删除和管理
@@ -128,21 +156,6 @@ plotting-editor-by-ai/
 - 支持从资源面板拖拽标绘对象到地图
 - 自动计算放置位置的地理坐标
 - 支持点、线、面、模型等多种标绘类型
-
-### 资源管理 (ResourcePanel.vue)
-- 提供标绘资源库浏览
-- 支持资源搜索和分类
-- 集成虚拟文件系统
-
-### 属性编辑 (PropertyPanel.vue)
-- 实时显示选中对象属性
-- 支持变换、显示等属性编辑
-- 场景全局属性配置
-
-### 状态监控 (EditorFooter.vue)
-- 实时显示坐标信息
-- 相机状态监控
-- 性能指标显示
 
 ## 💯 AI
 
