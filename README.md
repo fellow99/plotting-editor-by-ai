@@ -76,6 +76,7 @@ plotting-editor-by-ai/
 ├── package.json              # 项目配置
 ├── vite.config.js            # Vite 配置
 ├── README.md                 # 项目说明
+├── .git/                     # git版本管理目录
 ```
 
 ## 🏗️ 架构设计
