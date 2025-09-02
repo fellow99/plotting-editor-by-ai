@@ -11,3 +11,8 @@
 ### README.md文件相关
 - 每个任务开始时都先阅读/README.md文件；
 - 每次新增、删除文件，都需要修改/README.md文件的项目结构。注意，/src/assets目录内容变更不需要/README.md；
+
+### CESIUM_CHANGELOG.md
+- 当前使用的Cesium版本是1.132.0
+- 每个任务开始时都先阅读/CESIUM_CHANGELOG.md文件；
+- 调用Cesium的功能时，注意使用新版写法；
