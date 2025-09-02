@@ -1,8 +1,6 @@
 <!--
   编辑器配置对话框
   用于修改编辑器的视图、地图、控制器、渲染等配置项
-  采用 element-plus 组件，所有配置项可视化编辑
-  新语法说明：使用<script setup>，组合式API，严格遵循Vue文件结构规范
 -->
 
 <script setup>
@@ -46,12 +44,7 @@ const form = ref({
   // 控制器配置
   zoomEventType: editorConfig.controls.zoomEventType,
   tiltEventType: editorConfig.controls.tiltEventType,
-  rotateEventType: editorConfig.controls.rotateEventType,
-  // 渲染配置
-  alpha: editorConfig.webgl.alpha,
-  depth: editorConfig.webgl.depth,
-  stencil: editorConfig.webgl.stencil,
-  antialias: editorConfig.webgl.antialias
+  rotateEventType: editorConfig.controls.rotateEventType
 });
 
 /**
@@ -72,10 +65,6 @@ watch(
       form.value.zoomEventType = editorConfig.controls.zoomEventType;
       form.value.tiltEventType = editorConfig.controls.tiltEventType;
       form.value.rotateEventType = editorConfig.controls.rotateEventType;
-      form.value.alpha = editorConfig.webgl.alpha;
-      form.value.depth = editorConfig.webgl.depth;
-      form.value.stencil = editorConfig.webgl.stencil;
-      form.value.antialias = editorConfig.webgl.antialias;
     }
   }
 );
@@ -102,12 +91,6 @@ function handleSave() {
       zoomEventType: form.value.zoomEventType,
       tiltEventType: form.value.tiltEventType,
       rotateEventType: form.value.rotateEventType
-    },
-    webgl: {
-      alpha: form.value.alpha,
-      depth: form.value.depth,
-      stencil: form.value.stencil,
-      antialias: form.value.antialias
     }
   });
   emit('update:modelValue', false);
@@ -136,10 +119,6 @@ function handleReset() {
   form.value.zoomEventType = editorConfig.controls.zoomEventType;
   form.value.tiltEventType = editorConfig.controls.tiltEventType;
   form.value.rotateEventType = editorConfig.controls.rotateEventType;
-  form.value.alpha = editorConfig.webgl.alpha;
-  form.value.depth = editorConfig.webgl.depth;
-  form.value.stencil = editorConfig.webgl.stencil;
-  form.value.antialias = editorConfig.webgl.antialias;
 }
 </script>
 
@@ -195,19 +174,6 @@ function handleReset() {
           <ElOption label="左键拖拽(LEFT_DRAG)" value="LEFT_DRAG" />
           <ElOption label="右键拖拽(RIGHT_DRAG)" value="RIGHT_DRAG" />
         </ElSelect>
-      </ElFormItem>
-      <ElDivider content-position="left">渲染配置</ElDivider>
-      <ElFormItem label="Alpha通道">
-        <ElSwitch v-model="form.alpha" />
-      </ElFormItem>
-      <ElFormItem label="深度缓冲区">
-        <ElSwitch v-model="form.depth" />
-      </ElFormItem>
-      <ElFormItem label="模板缓冲区">
-        <ElSwitch v-model="form.stencil" />
-      </ElFormItem>
-      <ElFormItem label="抗锯齿">
-        <ElSwitch v-model="form.antialias" />
       </ElFormItem>
     </ElForm>
     <template #footer>

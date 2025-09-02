@@ -27,10 +27,7 @@ const {
 onMounted(async () => {
   try {
     await nextTick()
-    console.log('SceneViewer onMounted, cesiumContainer.value:', cesiumContainer.value)
-    
     if (cesiumContainer.value) {
-      console.log('容器元素存在，开始初始化场景')
       await initScene(cesiumContainer.value)
       isLoading.value = false
       
@@ -73,7 +70,6 @@ const handleCanvasClick = (event) => {
   // 拾取对象
   const pickedObject = viewer.value.scene.pick(click)
   if (pickedObject) {
-    console.log('选中对象:', pickedObject)
     // TODO: 处理对象选择
   }
   
@@ -82,7 +78,6 @@ const handleCanvasClick = (event) => {
   if (position) {
     const longitude = Cesium.Math.toDegrees(position.longitude)
     const latitude = Cesium.Math.toDegrees(position.latitude)
-    console.log(`点击位置: 经度 ${longitude.toFixed(6)}, 纬度 ${latitude.toFixed(6)}`)
   }
 }
 
@@ -146,8 +141,6 @@ const handleDrop = (event) => {
  * @param {Cesium.Cartographic} position - 放置位置
  */
 const handleObjectDrop = (data, position) => {
-  console.log('放置对象:', data, '位置:', position)
-  
   // 根据对象类型创建不同的实体
   switch (data.type) {
     case 'point':

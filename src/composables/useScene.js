@@ -1,7 +1,6 @@
 /**
  * 场景管理可组合函数
- * 基于 Cesium 1.132.0 的场景管理，使用新版 API
- * 使用默认配置文件：DEFAULT_VIEWER_OPTIONS、DEFAULT_CAMERA、DEFAULT_CENTER
+ * 使用新版Cesium 1.132.0 API，不依赖ready和readyPromise
  */
 
 import { ref, reactive, shallowRef } from 'vue'

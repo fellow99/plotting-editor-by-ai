@@ -1,6 +1,5 @@
 <!--
   场景属性编辑面板
-  基于Cesium 1.132.0的场景全局属性配置
 -->
 <script setup>
 import { ref, computed, inject, onMounted, watch } from 'vue';

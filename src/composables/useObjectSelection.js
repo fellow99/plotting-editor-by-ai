@@ -1,7 +1,6 @@
 /**
  * 对象选择功能
  * 基于Cesium的实体选择、高亮显示和管理
- * 使用新版Cesium 1.132.0 API，不依赖ready和readyPromise
  */
 import { ref, shallowRef, computed, onUnmounted } from 'vue';
 

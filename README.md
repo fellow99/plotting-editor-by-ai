@@ -40,27 +40,29 @@ plotting-editor-by-ai/
 │   │   │   ├── ScenePropertyPane.vue         # 场景属性编辑面板
 │   │   │   ├── BasePropertyPane.vue          # 对象基础属性编辑面板
 │   │   ├── dialog/                           # 各类对话框组件
-│   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框（可视化编辑所有配置项）
+│   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框
 │   │   ├── scene/                            # 3D 场景组件
 │   │   │   ├── SceneViewer.vue               # 主场景视图（基于 Cesium）
 │   ├── composables/                          # Vue Composition API 可组合函数
-│   │   ├── useScene.js                       # 场景管理（Cesium 1.132.0）
+│   │   ├── useScene.js                       # 场景管理
 │   │   ├── useObjectSelection.js             # 对象选择功能
 │   │   ├── useAssets.js                      # 资源管理
 │   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
-│   │   ├── static-drive-api.js               # 静态文件系统封装
-│   │   ├── vfs-service.js                    # 虚拟文件系统服务
 │   ├── core/                                 # 核心 Cesium 逻辑
 │   │   ├── SceneManager.js                   # 场景管理器
 │   │   ├── ObjectManager.js                  # 对象管理器
+│   ├── services/                             # 数据请求和外部接口
+│   │   ├── static-drive-api.js               # 静态文件系统封装
+│   │   ├── vfs-server-api.js                 # 虚拟文件系统封装
+│   │   ├── vfs-service.js                    # 虚拟文件系统服务
 │   ├── utils/                                # 工具函数
 │   │   ├── mathUtils.js                      # 数学工具
 │   │   ├── geometryUtils.js                  # 几何工具
 │   │   ├── fileUtils.js                      # 文件处理工具
 │   ├── constants/                            # 常量定义
 │   │   ├── DEFAULT_VIEWER_OPTIONS.js         # 默认Viewer配置
-│   │   ├── DEFAULT_CENTER.js                 # 默认中心点配置（北京坐标）
-│   │   ├── DEFAULT_CAMERA.js                 # 默认相机配置（引用DEFAULT_CENTER）
+│   │   ├── DEFAULT_CENTER.js                 # 默认中心点配置
+│   │   ├── DEFAULT_CAMERA.js                 # 默认相机配置
 │   ├── App.vue                               # 根组件（仅负责引入Editor.vue）
 │   ├── Editor.vue                            # 主编辑器组件（包含全部业务与UI）
 │   ├── main.js                               # 应用入口

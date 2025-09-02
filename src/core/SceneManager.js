@@ -42,7 +42,6 @@ export class SceneManager {
       this.setupEventHandlers();
 
       this.isInitialized = true;
-      console.log('Cesium场景初始化完成');
 
       return this.viewer;
 
@@ -381,8 +380,6 @@ export class SceneManager {
       this.camera = null;
       this.isInitialized = false;
       this.onEvent = null;
-
-      console.log('场景管理器已销毁');
 
     } catch (error) {
       console.error('销毁场景管理器失败:', error);

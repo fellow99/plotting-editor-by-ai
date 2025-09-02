@@ -63,8 +63,6 @@ const plottingResources = reactive([
 const startDrag = (event, resource) => {
   event.dataTransfer.setData('application/json', JSON.stringify(resource))
   event.dataTransfer.effectAllowed = 'copy'
-  
-  console.log('开始拖拽资源:', resource)
 }
 
 /**

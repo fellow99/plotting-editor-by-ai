@@ -29,14 +29,6 @@ const defaultConfig = {
     tiltEventType: 'RIGHT_DRAG', // 支持的倾斜事件类型
     rotateEventType: 'LEFT_DRAG', // 支持的旋转事件类型
   },
-
-  // 渲染配置
-  webgl: {
-    alpha: true, // 是否包含alpha通道
-    depth: true, // 是否包含深度缓冲区
-    stencil: true, // 是否包含模板缓冲区
-    antialias: true, // 是否执行抗锯齿
-  },
   
 }
 
@@ -57,7 +49,6 @@ export function useEditorConfig() {
   const updateConfig = (category, key, value) => {
     if (editorConfig[category] && key in editorConfig[category]) {
       editorConfig[category][key] = value
-      console.log(`配置更新: ${category}.${key} = ${value}`)
     } else {
       console.warn(`配置键不存在: ${category}.${key}`)
     }
@@ -85,11 +76,9 @@ export function useEditorConfig() {
     if (category) {
       if (defaultConfig[category]) {
         Object.assign(editorConfig[category], defaultConfig[category])
-        console.log(`配置重置: ${category}`)
       }
     } else {
       Object.assign(editorConfig, JSON.parse(JSON.stringify(defaultConfig)))
-      console.log('所有配置已重置')
     }
   }
 
@@ -128,7 +117,6 @@ export function useEditorConfig() {
         }
       })
       
-      console.log('配置导入成功')
       return true
     } catch (error) {
       console.error('配置导入失败:', error)
@@ -143,7 +131,6 @@ export function useEditorConfig() {
     try {
       const configData = exportConfig()
       localStorage.setItem('plotting-editor-config', JSON.stringify(configData))
-      console.log('配置已保存到本地存储')
       return true
     } catch (error) {
       console.error('配置保存失败:', error)
@@ -160,7 +147,6 @@ export function useEditorConfig() {
       if (configData) {
         const config = JSON.parse(configData)
         importConfig(config)
-        console.log('配置已从本地存储加载')
         return true
       }
       return false

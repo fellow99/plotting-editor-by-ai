@@ -29,12 +29,10 @@ const {
 // 生命周期
 onMounted(() => {
   // 场景初始化由SceneViewer组件自己处理
-  console.log('Editor组件已挂载')
 })
 
 onUnmounted(() => {
   // 场景销毁由SceneViewer组件自己处理
-  console.log('Editor组件已卸载')
 })
 
 // 方法
@@ -58,7 +56,6 @@ const toggleRightPanel = () => {
 const handleFileDrop = (event) => {
   event.preventDefault()
   // TODO: 实现文件拖拽处理逻辑
-  console.log('文件拖拽处理:', event.dataTransfer.files)
 }
 
 /**

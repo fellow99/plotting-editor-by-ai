@@ -38,7 +38,6 @@ const sceneProperties = ref({
 const updateObjectProperty = (key, value) => {
   if (selectedObject.value) {
     objectProperties.value[key] = value
-    console.log(`更新对象属性: ${key} = ${value}`)
     // TODO: 实际更新场景中的对象
   }
 }
@@ -48,7 +47,6 @@ const updateObjectProperty = (key, value) => {
  */
 const updateSceneProperty = (key, value) => {
   sceneProperties.value[key] = value
-  console.log(`更新场景属性: ${key} = ${value}`)
   // TODO: 实际更新场景配置
 }
 </script>
