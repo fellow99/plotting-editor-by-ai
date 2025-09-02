@@ -40,7 +40,7 @@ plotting-editor-by-ai/
 │   │   │   ├── PropertyPanel.vue             # 属性面板
 │   │   │   ├── Toolbar.vue                   # 工具栏
 │   │   │   ├── EditorFooter.vue              # 编辑器底部状态栏
-│   │   │   ├── ResourcePanel.vue             # 资源面板
+│   │   │   ├── ResourcePanel.vue             # 资源面板（文件系统tab集成VfsFilePanel.vue）
 │   │   │   ├── VfsFilePanel.vue              # 虚拟文件系统面板
 │   │   │   ├── Inspector.vue                 # 对象检查器
 │   │   ├── property/                         # 各种属性编辑组件

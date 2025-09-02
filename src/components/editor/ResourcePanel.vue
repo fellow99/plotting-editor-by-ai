@@ -6,6 +6,7 @@
 -->
 <script setup>
 import { ref, computed } from 'vue'
+import VfsFilePanel from './VfsFilePanel.vue'
 
 /**
  * 当前激活的标签页
@@ -120,10 +121,7 @@ function clearSearch() {
       </div>
       <!-- 文件系统 -->
       <div v-show="activeTab === 'files'" class="file-browser">
-        <div class="file-info">
-          <p>虚拟文件系统浏览器</p>
-          <p class="text-secondary">功能待实现</p>
-        </div>
+        <VfsFilePanel />
       </div>
       <!-- 我的收藏 -->
       <div v-show="activeTab === 'favorites'" class="favorites">
@@ -177,7 +175,6 @@ function clearSearch() {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 12px;
 }
 .search-section {
   display: flex;
@@ -267,7 +264,6 @@ function clearSearch() {
 }
 .file-browser,
 .favorites {
-  padding: 20px;
   text-align: center;
   color: #888;
 }

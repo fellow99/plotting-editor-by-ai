@@ -1,260 +1,227 @@
 <!--
-  虚拟文件系统面板
-  基于Cesium的地图标绘编辑器文件管理组件
+  虚拟文件系统面板组件
+  支持多文件系统切换、目录浏览、文件/目录点击、返回上级、预留文件点击和拖拽接口。
+  本文件完全参考 three-editor-by-ai 工程实现，采用 shallowRef 管理 vfsList、currentVfs、files 等，所有 ref/shallowRef 变量均有注释说明。
 -->
 <script setup>
-import { ref, onMounted, inject } from 'vue';
-import { ElMessage } from 'element-plus';
-import 'element-plus/es/components/message/style/css';
+import { ref, shallowRef, onMounted, watch } from 'vue';
+import vfsService from '../../services/vfs-service.js';
 
-// 注入场景管理器
-const scene = inject('scene');
-
-// 响应式数据
-const files = ref([]);
-const folders = ref([]);
+// 所有已注册虚拟文件系统实例
+const vfsList = shallowRef([]);
+// 当前选中的文件系统 drive 名
+const selectedDrive = ref('');
+// 当前虚拟文件系统实例
+const currentVfs = shallowRef(null);
+// 当前路径
 const currentPath = ref('/');
-const loading = ref(false);
+// 当前目录下的文件/文件夹列表
+const files = shallowRef([]);
 
-/**
- * 加载文件列表
- */
-async function loadFiles(path = '/') {
-  loading.value = true;
+/** 加载所有虚拟文件系统 */
+async function loadVfsList() {
+  vfsList.value = vfsService.listVfs();
+  if (vfsList.value.length > 0 && !selectedDrive.value) {
+    selectedDrive.value = vfsList.value[0]._drive;
+    currentVfs.value = vfsList.value[0];
+  }
+}
+
+/** 加载当前目录内容 */
+async function loadFiles() {
+  if (!currentVfs.value) return;
   try {
-    // TODO: 实现虚拟文件系统API调用
-    // 临时模拟数据
-    files.value = [
-      {
-        name: 'terrain.czml',
-        type: 'czml',
-        size: '1.2MB',
-        path: path + 'terrain.czml'
-      },
-      {
-        name: 'building.kml',
-        type: 'kml',
-        size: '856KB',
-        path: path + 'building.kml'
-      }
-    ];
-    folders.value = [
-      {
-        name: 'models',
-        type: 'folder',
-        path: path + 'models/'
-      }
-    ];
-  } catch (error) {
-    ElMessage.error('加载文件列表失败');
-    console.error('Load files error:', error);
-  } finally {
-    loading.value = false;
+    const res = await currentVfs.value.list(currentPath.value);
+    files.value = (res && res.data && res.data.files) ? res.data.files : [];
+  } catch (e) {
+    files.value = [];
   }
 }
 
-/**
- * 处理文件拖拽开始
- */
-function handleDragStart(event, file) {
-  event.dataTransfer.setData('application/json', JSON.stringify({
-    type: 'vfs-file',
-    file: file
-  }));
-  event.dataTransfer.effectAllowed = 'copy';
+/** 切换文件系统 */
+function onDriveChange() {
+  currentVfs.value = vfsList.value.find(v => v._drive === selectedDrive.value) || null;
+  currentPath.value = '/';
 }
 
-/**
- * 处理文件夹点击
- */
-function handleFolderClick(folder) {
-  currentPath.value = folder.path;
-  loadFiles(folder.path);
-}
-
-/**
- * 返回上级目录
- */
-function goBack() {
-  const parts = currentPath.value.split('/').filter(p => p);
-  if (parts.length > 0) {
-    parts.pop();
-    currentPath.value = '/' + parts.join('/') + (parts.length > 0 ? '/' : '');
-    loadFiles(currentPath.value);
+/** 点击目录/文件 */
+function onItemClick(item) {
+  if (item.type === 'FOLDER') {
+    currentPath.value = item.path + '/' + item.name;
+  } else if (item.type === 'FILE') {
+    onFileClick(item);
   }
 }
 
-/**
- * 获取文件图标
- */
-function getFileIcon(type) {
-  const icons = {
-    'czml': '🗺️',
-    'kml': '📍',
-    'geojson': '🌐',
-    'gltf': '🏗️',
-    'folder': '📁'
-  };
-  return icons[type] || '📄';
+/** 返回上一级目录 */
+function goParent() {
+  currentPath.value = vfsService.getParentPath(currentPath.value);
 }
 
-// 组件挂载时加载文件
+/** 文件点击事件（预留） */
+function onFileClick(file) {
+  // TODO: 实现文件点击逻辑
+}
+
+/**
+ * 文件拖拽事件
+ * 设置拖拽数据类型为'application/x-vfs'，值为JSON.stringify(file)
+ */
+function handleDragStart(file, event) {
+  event.dataTransfer.setData('application/x-vfs', JSON.stringify(file));
+}
+
 onMounted(() => {
+  loadVfsList();
+});
+
+watch([currentVfs, currentPath], () => {
   loadFiles();
 });
 </script>
 
 <template>
   <div class="vfs-file-panel">
-    <div class="panel-header">
-      <div class="path-nav">
-        <button 
-          v-if="currentPath !== '/'"
-          @click="goBack"
-          class="nav-btn"
-        >
-          ← 返回
-        </button>
-        <span class="current-path">{{ currentPath }}</span>
+    <!-- 文件系统选择 -->
+    <div class="vfs-header">
+      <div class="vfs-row">
+        <label>文件系统：</label>
+        <select v-model="selectedDrive" @change="onDriveChange">
+          <option v-for="vfs in vfsList" :key="vfs._drive" :value="vfs._drive">
+            {{ vfs._drive }}
+          </option>
+        </select>
+      </div>
+      <div class="vfs-row">
+        <span class="vfs-path">当前路径：{{ currentPath }}</span>
       </div>
     </div>
-
-    <div class="file-list" v-loading="loading">
-      <!-- 文件夹列表 -->
-      <div 
-        v-for="folder in folders"
-        :key="folder.path"
-        class="file-item folder"
-        @click="handleFolderClick(folder)"
-      >
-        <span class="file-icon">{{ getFileIcon('folder') }}</span>
-        <span class="file-name">{{ folder.name }}</span>
+    <!-- 目录/文件列表 -->
+    <div class="vfs-listview">
+      <div v-if="currentPath !== '/'" class="vfs-item vfs-back" @click="goParent">
+        <span>⬅️</span>
+        返回上一级
       </div>
-
-      <!-- 文件列表 -->
-      <div 
-        v-for="file in files"
-        :key="file.path"
-        class="file-item"
+      <div
+        v-for="item in files"
+        :key="item.path + '/' + item.name"
+        class="vfs-item"
+        :class="{ folder: item.type === 'FOLDER', file: item.type === 'FILE' }"
+        @click="onItemClick(item)"
+        @dragstart="handleDragStart(item, $event)"
         draggable="true"
-        @dragstart="handleDragStart($event, file)"
       >
-        <span class="file-icon">{{ getFileIcon(file.type) }}</span>
-        <div class="file-info">
-          <div class="file-name">{{ file.name }}</div>
-          <div class="file-size">{{ file.size }}</div>
-        </div>
+        <span v-if="item.type === 'FOLDER'">📁</span>
+        <span v-else>📄</span>
+        {{ item.title || item.name }}
       </div>
-    </div>
-
-    <div class="panel-footer">
-      <div class="help-text">
-        拖拽文件到地图加载数据
-      </div>
+      <div v-if="files.length === 0" class="vfs-empty">该目录为空</div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .vfs-file-panel {
+  width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
   background: #2a2a2a;
   color: #fff;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
 }
 
-.panel-header {
-  padding: 12px;
+.vfs-header {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 8px;
   border-bottom: 1px solid #444;
-  background: #333;
+  background: #232323;
 }
-
-.path-nav {
+.vfs-row {
   display: flex;
   align-items: center;
+  min-height: 32px;
   gap: 8px;
-}
-
-.nav-btn {
-  background: #555;
-  border: none;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #666;
-  }
-}
-
-.current-path {
-  font-size: 12px;
-  color: #aaa;
-}
-
-.file-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.file-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  margin-bottom: 4px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #444;
-  }
-
-  &.folder {
-    background: #333;
-    border: 1px solid #555;
-
-    &:hover {
-      background: #444;
-      border-color: #666;
-    }
-  }
-}
-
-.file-icon {
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-.file-info {
-  flex: 1;
-}
-
-.file-name {
-  font-size: 13px;
-  font-weight: 500;
   margin-bottom: 2px;
 }
 
-.file-size {
-  font-size: 11px;
+.vfs-header label {
   color: #aaa;
+  font-size: 13px;
 }
 
-.panel-footer {
-  padding: 8px 12px;
-  border-top: 1px solid #444;
+.vfs-header select {
   background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
 }
 
-.help-text {
-  font-size: 11px;
+.vfs-header button {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 4px;
+  transition: background 0.2s;
+}
+.vfs-header button:hover {
+  background: #007acc;
+}
+
+.vfs-path {
+  margin-left: 16px;
+  color: #888;
+  font-size: 12px;
+}
+
+.vfs-listview {
+  flex: 1;
+  border-top: 1px solid #444;
+  padding: 12px 8px 0 8px;
+  min-height: 120px;
+  background: #232323;
+  overflow-y: auto;
+}
+
+.vfs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.vfs-item.folder {
+  font-weight: bold;
+  color: #2d7be5;
+}
+
+.vfs-item.file {
+  color: #fff;
+}
+
+.vfs-item:hover {
+  background: #333;
+  color: #fff;
+}
+
+.vfs-empty {
   color: #aaa;
+  padding: 24px 0;
   text-align: center;
+  font-size: 13px;
 }
 </style>
