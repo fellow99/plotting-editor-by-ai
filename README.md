@@ -130,7 +130,7 @@ plotting-editor-by-ai/
 ### 数据结构
 - 使用GeoJSON作为标绘信息的数据结构
 - 在GeoJSON数据结构的基础上增加一些该编辑器专用的附加信息
-标绘信息数据结构如下：
+- 标绘信息数据结构如下：
 ```js
 {
     "type": "FeatureCollection",
@@ -156,6 +156,11 @@ plotting-editor-by-ai/
     }
 }
 ```
+
+- 场景管理器（SceneManager.js）支持以下数据操作流程：
+  - clearScene(): 清空场景所有实体
+  - exportScene(): 导出场景数据为GeoJSON+userData结构，Feature和FeatureCollection均支持userData字段，便于扩展和编辑器专用信息存储
+  - loadScene(json): 加载GeoJSON结构场景数据，根据json内容重建场景实体
 
 ### 场景管理 (useScene.js)
 - 基于 Cesium 1.132.0 的场景初始化和管理

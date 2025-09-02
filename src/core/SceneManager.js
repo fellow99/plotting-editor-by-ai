@@ -2,6 +2,12 @@
  * 场景管理器
  * 基于Cesium 1.132.0的场景管理核心逻辑
  * 使用新版API，不依赖ready和readyPromise，移除内置RequireJS
+ * 
+ * 标绘数据结构采用GeoJSON标准，并在Feature和FeatureCollection对象上扩展userData字段用于存储编辑器专用附加信息。
+ * 新增函数：
+ * - clearScene(): 清空场景所有实体
+ * - exportScene(): 导出场景数据为GeoJSON+userData结构
+ * - loadScene(json): 加载GeoJSON结构场景数据并重建场景
  */
 import * as Cesium from 'cesium';
 import { DEFAULT_VIEWER_OPTIONS } from '../constants/DEFAULT_VIEWER_OPTIONS.js';
@@ -352,6 +358,185 @@ export class SceneManager {
    */
   on(callback) {
     this.onEvent = callback;
+  }
+
+  /**
+   * 清空场景所有实体
+   * 用于场景重置
+   */
+  clearScene() {
+    if (!this.viewer) return;
+    try {
+      this.viewer.entities.removeAll();
+      this.emit('entitiesCleared');
+    } catch (error) {
+      console.error('清空场景失败:', error);
+    }
+  }
+
+  /**
+   * 导出场景数据为GeoJSON+userData结构
+   * @returns {Object} GeoJSON FeatureCollection
+   */
+  exportScene() {
+    if (!this.viewer) return null;
+    try {
+      // 构建GeoJSON FeatureCollection
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [],
+        userData: {} // 可根据需求填充场景级附加信息
+      };
+      this.viewer.entities.values.forEach(entity => {
+        // 仅导出可见实体
+        if (!entity.show) return;
+        // 判断类型并转换为GeoJSON geometry
+        let geometry = null;
+        let coordinates = null;
+        let type = null;
+        // 点
+        if (entity.position) {
+          const cartesian = entity.position.getValue(Cesium.JulianDate.now());
+          if (cartesian) {
+            const carto = Cesium.Cartographic.fromCartesian(cartesian);
+            coordinates = [
+              Cesium.Math.toDegrees(carto.longitude),
+              Cesium.Math.toDegrees(carto.latitude),
+              carto.height
+            ];
+            geometry = {
+              type: 'Point',
+              coordinates: coordinates
+            };
+            type = 'Point';
+          }
+        }
+        // 线
+        else if (entity.polyline && entity.polyline.positions) {
+          const positions = entity.polyline.positions.getValue(Cesium.JulianDate.now());
+          if (positions && positions.length > 0) {
+            coordinates = positions.map(pos => {
+              const carto = Cesium.Cartographic.fromCartesian(pos);
+              return [
+                Cesium.Math.toDegrees(carto.longitude),
+                Cesium.Math.toDegrees(carto.latitude),
+                carto.height
+              ];
+            });
+            geometry = {
+              type: 'LineString',
+              coordinates: coordinates
+            };
+            type = 'LineString';
+          }
+        }
+        // 面
+        else if (entity.polygon && entity.polygon.hierarchy) {
+          const hierarchy = entity.polygon.hierarchy.getValue(Cesium.JulianDate.now());
+          if (hierarchy && hierarchy.positions && hierarchy.positions.length > 0) {
+            coordinates = [hierarchy.positions.map(pos => {
+              const carto = Cesium.Cartographic.fromCartesian(pos);
+              return [
+                Cesium.Math.toDegrees(carto.longitude),
+                Cesium.Math.toDegrees(carto.latitude),
+                carto.height
+              ];
+            })];
+            geometry = {
+              type: 'Polygon',
+              coordinates: coordinates
+            };
+            type = 'Polygon';
+          }
+        }
+        // 其他类型可扩展...
+
+        if (!geometry) return;
+
+        // 构建Feature
+        const feature = {
+          type: 'Feature',
+          geometry,
+          properties: {
+            id: entity.id,
+            name: entity.name,
+            description: entity.description,
+            ...entity.properties // 兼容自定义属性
+          },
+          userData: entity.userData || {} // 编辑器专用附加信息
+        };
+        geojson.features.push(feature);
+      });
+      // 可扩展场景级userData
+      geojson.userData = {
+        exportedAt: Date.now()
+        // ...其他场景附加信息
+      };
+      return geojson;
+    } catch (error) {
+      console.error('导出场景失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 加载GeoJSON结构场景数据并重建场景
+   * @param {Object} geojson - 标绘数据
+   */
+  loadScene(geojson) {
+    if (!this.viewer || !geojson || geojson.type !== 'FeatureCollection') return;
+    try {
+      // 清空现有实体
+      this.viewer.entities.removeAll();
+      // 遍历Feature重建实体
+      geojson.features.forEach(feature => {
+        let entityOptions = {
+          id: feature.properties?.id,
+          name: feature.properties?.name,
+          description: feature.properties?.description,
+          userData: feature.userData || {},
+          properties: feature.properties || {}
+        };
+        // 点
+        if (feature.geometry?.type === 'Point') {
+          const coords = feature.geometry.coordinates;
+          entityOptions.position = Cesium.Cartesian3.fromDegrees(coords[0], coords[1], coords[2] || 0);
+          entityOptions.point = {
+            pixelSize: 10,
+            color: Cesium.Color.YELLOW,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 2
+          };
+        }
+        // 线
+        else if (feature.geometry?.type === 'LineString') {
+          const coords = feature.geometry.coordinates;
+          entityOptions.polyline = {
+            positions: coords.map(c => Cesium.Cartesian3.fromDegrees(c[0], c[1], c[2] || 0)),
+            width: 2,
+            material: Cesium.Color.CYAN
+          };
+        }
+        // 面
+        else if (feature.geometry?.type === 'Polygon') {
+          const coords = feature.geometry.coordinates[0];
+          entityOptions.polygon = {
+            hierarchy: coords.map(c => Cesium.Cartesian3.fromDegrees(c[0], c[1], c[2] || 0)),
+            material: Cesium.Color.BLUE.withAlpha(0.5),
+            outline: true,
+            outlineColor: Cesium.Color.BLUE,
+            outlineWidth: 1
+          };
+        }
+        // 其他类型可扩展...
+
+        this.viewer.entities.add(entityOptions);
+      });
+      // 可处理场景级userData
+      this.emit('sceneLoaded', { geojson });
+    } catch (error) {
+      console.error('加载场景失败:', error);
+    }
   }
 
   /**
