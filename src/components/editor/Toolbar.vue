@@ -1,291 +1,402 @@
 <!--
- * 工具栏组件
- * 地图标绘编辑器顶部工具栏
+  工具栏组件
+  地图标绘编辑器顶部工具栏，分组为“文件”“编辑”“对象变换”“视图”“配置”，所有功能按钮均为预留
+  参考 three-editor-by-ai 工程分组与布局
+  采用 <script setup> 写法，严格遵循 Vue 代码规范
 -->
+
 <script setup>
 import { ref } from 'vue'
-import { ElButton, ElButtonGroup, ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessage } from 'element-plus'
+import EditorConfigDialog from '../dialog/EditorConfigDialog.vue'
 
-// 定义事件
-const emit = defineEmits(['toggle-left-panel', 'toggle-right-panel'])
-
-// 响应式数据
-const isFullscreen = ref(false)
-
-// 方法
 /**
- * 切换左侧面板
+ * 编辑器配置对话框显示状态
+ * @type {import('vue').Ref<boolean>}
  */
-const toggleLeftPanel = () => {
-  emit('toggle-left-panel')
+const showEditorConfig = ref(false)
+
+/**
+ * 当前对象变换模式
+ * @type {import('vue').Ref<string>}
+ */
+const transformMode = ref('translate')
+
+/**
+ * 是否有选中对象（预留）
+ * @type {import('vue').Ref<boolean>}
+ */
+const hasSelection = ref(false)
+
+/**
+ * 是否可撤销（预留）
+ * @type {import('vue').Ref<boolean>}
+ */
+const canUndo = ref(false)
+
+/**
+ * 是否可重做（预留）
+ * @type {import('vue').Ref<boolean>}
+ */
+const canRedo = ref(false)
+
+/**
+ * 新建项目（预留功能）
+ */
+function newProject() {
+  // TODO: 实现新建项目
 }
 
 /**
- * 切换右侧面板
+ * 暂存项目到本地（预留功能）
  */
-const toggleRightPanel = () => {
-  emit('toggle-right-panel')
+function saveLocal() {
+  // TODO: 实现暂存到本地
 }
 
 /**
- * 新建项目
+ * 保存项目（预留功能）
  */
-const newProject = () => {
-  ElMessage.info('新建项目功能待实现')
+function saveProject() {
+  // TODO: 实现保存项目
 }
 
 /**
- * 打开项目
+ * 加载项目（预留功能）
  */
-const openProject = () => {
-  ElMessage.info('打开项目功能待实现')
+function loadProject() {
+  // TODO: 实现加载项目
 }
 
 /**
- * 保存项目
+ * 导出项目（预留功能）
  */
-const saveProject = () => {
-  ElMessage.info('保存项目功能待实现')
+function exportProject() {
+  // TODO: 实现导出项目
 }
 
 /**
- * 导出项目
+ * 导入项目（预留功能）
  */
-const exportProject = () => {
-  ElMessage.info('导出项目功能待实现')
+function importProject() {
+  // TODO: 实现导入项目
 }
 
 /**
- * 撤销操作
+ * 撤销操作（预留功能）
  */
-const undo = () => {
-  ElMessage.info('撤销功能待实现')
+function undo() {
+  // TODO: 实现撤销
 }
 
 /**
- * 重做操作
+ * 重做操作（预留功能）
  */
-const redo = () => {
-  ElMessage.info('重做功能待实现')
+function redo() {
+  // TODO: 实现重做
 }
 
 /**
- * 切换全屏
+ * 复制选中对象（预留功能）
  */
-const toggleFullscreen = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen()
-    isFullscreen.value = true
-  } else {
-    document.exitFullscreen()
-    isFullscreen.value = false
-  }
+function duplicateSelected() {
+  // TODO: 实现复制
 }
 
 /**
- * 显示帮助信息
+ * 删除选中对象（预留功能）
  */
-const showHelp = () => {
-  ElMessage.info('帮助功能待实现')
+function deleteSelected() {
+  // TODO: 实现删除
 }
 
 /**
- * 显示关于信息
+ * 设置对象变换模式（预留功能）
+ * @param {string} mode
  */
-const showAbout = () => {
-  ElMessage.info('关于 - 地图标绘编辑器 v1.0.0')
-}
-/**
- * 处理项目命令
- */
-const handleProjectCommand = (command) => {
-  switch (command) {
-    case 'new':
-      newProject()
-      break
-    case 'open':
-      openProject()
-      break
-    case 'save':
-      saveProject()
-      break
-    case 'export':
-      exportProject()
-      break
-  }
+function setTransformMode(mode) {
+  transformMode.value = mode
 }
 
 /**
- * 处理帮助命令
+ * 聚焦到选中对象（预留功能）
  */
-const handleHelpCommand = (command) => {
-  switch (command) {
-    case 'help':
-      showHelp()
-      break
-    case 'about':
-      showAbout()
-      break
-  }
+function focusSelected() {
+  // TODO: 实现聚焦
+}
+
+/**
+ * 重置相机（预留功能）
+ */
+function resetCamera() {
+  // TODO: 实现重置相机
+}
+
+/**
+ * 打开编辑器配置（预留功能）
+ */
+function openEditorConfig() {
+  showEditorConfig.value = true
 }
 </script>
 
 <template>
-  <div class="toolbar">
-    <!-- 左侧按钮组 -->
-    <div class="toolbar-left">
-      <!-- 面板切换按钮 -->
-      <el-button-group>
-        <el-button 
-          size="small" 
-          @click="toggleLeftPanel"
-          title="切换资源面板"
-        >
-          📁
-        </el-button>
-        <el-button 
-          size="small" 
-          @click="toggleRightPanel"
-          title="切换属性面板"
-        >
-          ⚙️
-        </el-button>
-      </el-button-group>
-      
-      <!-- 项目操作 -->
-      <el-dropdown trigger="click" @command="handleProjectCommand">
-        <el-button size="small">
-          项目 ▼
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="new">新建项目</el-dropdown-item>
-            <el-dropdown-item command="open">打开项目</el-dropdown-item>
-            <el-dropdown-item command="save">保存项目</el-dropdown-item>
-            <el-dropdown-item command="export" divided>导出项目</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
-      <!-- 编辑操作 -->
-      <el-button-group>
-        <el-button 
-          size="small" 
-          @click="undo"
-          title="撤销 (Ctrl+Z)"
-        >
-          ↶
-        </el-button>
-        <el-button 
-          size="small" 
-          @click="redo"
-          title="重做 (Ctrl+Y)"
-        >
-          ↷
-        </el-button>
-      </el-button-group>
+  <div class="ribbon-toolbar dark">
+    <div class="ribbon-content">
+      <!-- 文件分组 -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-title">文件</div>
+        <div class="ribbon-group-buttons">
+          <button class="ribbon-btn" @click="newProject" title="新建项目">
+            <span class="icon">📄</span>
+            <div>新建</div>
+          </button>
+          <button class="ribbon-btn" @click="saveLocal" title="暂存到本地">
+            <span class="icon">🗄️</span>
+            <div>暂存</div>
+          </button>
+          <button class="ribbon-btn" @click="saveProject" title="保存项目">
+            <span class="icon">💾</span>
+            <div>保存</div>
+          </button>
+          <button class="ribbon-btn" @click="loadProject" title="加载项目">
+            <span class="icon">📂</span>
+            <div>加载</div>
+          </button>
+          <button class="ribbon-btn" @click="exportProject" title="导出项目">
+            <span class="icon">📤</span>
+            <div>导出</div>
+          </button>
+          <button class="ribbon-btn" @click="importProject" title="导入项目">
+            <span class="icon">📥</span>
+            <div>导入</div>
+          </button>
+        </div>
+      </div>
+      <!-- 编辑分组 -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-title">编辑</div>
+        <div class="ribbon-group-buttons">
+          <button class="ribbon-btn" @click="undo" :disabled="!canUndo" title="撤销 (Ctrl+Z)">
+            <span class="icon">↶</span>
+            <div>撤销</div>
+          </button>
+          <button class="ribbon-btn" @click="redo" :disabled="!canRedo" title="重做 (Ctrl+Y)">
+            <span class="icon">↷</span>
+            <div>重做</div>
+          </button>
+          <button class="ribbon-btn" @click="duplicateSelected" :disabled="!hasSelection" title="复制 (Ctrl+D)">
+            <span class="icon">📋</span>
+            <div>复制</div>
+          </button>
+          <button class="ribbon-btn danger" @click="deleteSelected" :disabled="!hasSelection" title="删除 (Delete)">
+            <span class="icon">🗑️</span>
+            <div>删除</div>
+          </button>
+        </div>
+      </div>
+      <!-- 对象变换分组 -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-title">对象变换</div>
+        <div class="ribbon-group-buttons">
+          <button
+            class="ribbon-btn"
+            :class="{ active: transformMode === 'translate' }"
+            @click="setTransformMode('translate')"
+            :disabled="!hasSelection"
+            title="移动工具 (G)"
+          >
+            <span class="icon">↔️</span>
+            <div>移动</div>
+          </button>
+          <button
+            class="ribbon-btn"
+            :class="{ active: transformMode === 'rotate' }"
+            @click="setTransformMode('rotate')"
+            :disabled="!hasSelection"
+            title="旋转工具 (R)"
+          >
+            <span class="icon">🔄</span>
+            <div>旋转</div>
+          </button>
+          <button
+            class="ribbon-btn"
+            :class="{ active: transformMode === 'scale' }"
+            @click="setTransformMode('scale')"
+            :disabled="!hasSelection"
+            title="缩放工具 (S)"
+          >
+            <span class="icon">📏</span>
+            <div>缩放</div>
+          </button>
+        </div>
+      </div>
+      <!-- 视图分组 -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-title">视图</div>
+        <div class="ribbon-group-buttons">
+          <button
+            class="ribbon-btn"
+            @click="focusSelected"
+            :disabled="!hasSelection"
+            title="聚焦到选中对象 (F)"
+          >
+            <span class="icon">🎯</span>
+            <div>聚焦</div>
+          </button>
+          <button
+            class="ribbon-btn"
+            @click="resetCamera"
+            title="重置相机"
+          >
+            <span class="icon">📷</span>
+            <div>重置相机</div>
+          </button>
+        </div>
+      </div>
+      <!-- 配置分组 -->
+      <div class="ribbon-group">
+        <div class="ribbon-group-title">配置</div>
+        <div class="ribbon-group-buttons">
+          <button class="ribbon-btn" @click="openEditorConfig" title="编辑器配置">
+            <span class="icon">⚙️</span>
+            <div>编辑器</div>
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <!-- 中央标题 -->
-    <div class="toolbar-center">
-      <span class="toolbar-title">地图标绘编辑器</span>
-    </div>
-    
-    <!-- 右侧按钮组 -->
-    <div class="toolbar-right">
-      <!-- 视图操作 -->
-      <el-button-group>
-        <el-button 
-          size="small" 
-          @click="toggleFullscreen"
-          :title="isFullscreen ? '退出全屏' : '进入全屏'"
-        >
-          {{ isFullscreen ? '🎯' : '⛶' }}
-        </el-button>
-      </el-button-group>
-      
-      <!-- 帮助菜单 -->
-      <el-dropdown trigger="click" @command="handleHelpCommand">
-        <el-button size="small">
-          帮助 ▼
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="help">使用帮助</el-dropdown-item>
-            <el-dropdown-item command="about" divided>关于</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
+<!-- 编辑器配置对话框 -->
+<EditorConfigDialog v-model="showEditorConfig" />
   </div>
 </template>
 
-<style scoped>
-.toolbar {
-  height: 50px;
-  background-color: #2d2d2d;
-  border-bottom: 1px solid #404040;
+<style lang="scss" scoped>
+.ribbon-toolbar.dark {
+  background: #23272e;
+  color: #f3f3f3;
+  border-bottom: 1.5px solid #2d323a;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px #0006;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 1000;
+  flex-direction: column;
+  width: 100%;
 }
 
-.toolbar-left,
-.toolbar-right {
+.ribbon-content {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: row;
+  gap: 4px;
+  align-items: flex-end;
+  padding: 4px;
+  width: 100%;
+  flex-wrap: wrap;
 }
 
-.toolbar-center {
-  flex: 1;
+.ribbon-group {
+  background: #282c34;
+  border-radius: 8px 8px 0 0;
+  border: 1.5px solid #353a42;
+  box-shadow: 0 2px 8px #0003;
+  padding: 4px;
+  margin-right: 8px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 120px;
+  height: 80px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.ribbon-group-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #7ecfff;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px #0008;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.ribbon-group-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.ribbon-btn {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  background: #23272e;
+  border: 1px solid #353a42;
+  border-radius: 5px;
+  color: #f3f3f3;
+  font-size: 11px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  min-width: 48px;
+  transition: background 0.2s, border 0.2s, color 0.2s;
 }
 
-.toolbar-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
-  user-select: none;
+.ribbon-btn:hover:not(:disabled) {
+  background: #2d323a;
+  border-color: #7ecfff;
+  color: #fff;
 }
 
-/* Element Plus 按钮样式覆盖 */
-:deep(.el-button) {
-  border-color: #555555 !important;
-  background-color: #3c3c3c !important;
-  color: #ffffff !important;
+.ribbon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-:deep(.el-button:hover) {
-  background-color: #4a4a4a !important;
-  border-color: #666666 !important;
+.ribbon-btn.active {
+  background: #007acc;
+  border-color: #0088dd;
+  color: #fff;
 }
 
-:deep(.el-button:active) {
-  background-color: #2a2a2a !important;
+.ribbon-btn.danger {
+  background: #d73a49;
+  border-color: #e85662;
+  color: #fff;
 }
 
-:deep(.el-dropdown) {
-  color: #ffffff !important;
+.ribbon-btn.danger:hover:not(:disabled) {
+  background: #e85662;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .toolbar {
-    padding: 0 8px;
+.icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .ribbon-content {
+    flex-wrap: wrap;
+    gap: 12px;
   }
-  
-  .toolbar-center {
-    display: none;
+  .ribbon-group {
+    min-width: 90px;
+    padding: 8px 8px 10px 8px;
   }
-  
-  .toolbar-left,
-  .toolbar-right {
-    gap: 4px;
+  .ribbon-group-title {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .ribbon-btn {
+    min-width: 40px;
+    font-size: 10px;
+    padding: 5px 6px;
+  }
+  .icon {
+    font-size: 15px;
   }
 }
 </style>

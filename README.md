@@ -40,6 +40,7 @@ plotting-editor-by-ai/
 │   │   │   ├── ScenePropertyPane.vue         # 场景属性编辑面板
 │   │   │   ├── BasePropertyPane.vue          # 对象基础属性编辑面板
 │   │   ├── dialog/                           # 各类对话框组件
+│   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框（可视化编辑所有配置项）
 │   │   ├── scene/                            # 3D 场景组件
 │   │   │   ├── SceneViewer.vue               # 主场景视图（基于 Cesium）
 │   ├── composables/                          # Vue Composition API 可组合函数

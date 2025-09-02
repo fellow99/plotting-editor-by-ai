@@ -9,6 +9,7 @@ import * as Cesium from 'cesium'
 import DEFAULT_VIEWER_OPTIONS from '../constants/DEFAULT_VIEWER_OPTIONS.js'
 import DEFAULT_CAMERA from '../constants/DEFAULT_CAMERA.js'
 import DEFAULT_CENTER from '../constants/DEFAULT_CENTER.js'
+import { useEditorConfig } from './useEditorConfig.js' // 引入编辑器配置
 
 // 全局状态 - Cesium库的对象使用shallowRef
 const viewer = shallowRef(null)
@@ -39,21 +40,42 @@ export function useScene() {
       // 设置 Cesium 访问令牌（如果需要）
       // Cesium.Ion.defaultAccessToken = 'your_access_token_here'
 
-      // 创建 Viewer，使用默认配置
-      viewer.value = new Cesium.Viewer(container, {
+      // 获取编辑器配置
+      const { editorConfig } = useEditorConfig()
+
+      // 基于 DEFAULT_VIEWER_OPTIONS 混合 editorConfig.map 配置
+      const options = {
         ...DEFAULT_VIEWER_OPTIONS,
-        
-        // 影像配置 - 不加载默认影像
-        imageryProvider: false,
-        
+        // 影像图层配置
+        imageryProvider: editorConfig.map.imagery ? undefined : false,
+        // 地形配置
+        terrainProvider: editorConfig.map.terrain ? undefined : false,
+        // 天空盒配置（新版 Cesium 需自定义 SkyBox，预留）
+        // skyBox: editorConfig.map.skybox ? undefined : false,
         // 性能配置
         requestRenderMode: true,
         maximumRenderTimeChange: Infinity
-      })
+      }
+
+      // 创建 Viewer，使用最终配置
+      viewer.value = new Cesium.Viewer(container, options)
 
       // 获取场景和相机引用
       scene.value = viewer.value.scene
       camera.value = viewer.value.camera
+
+      // 设置鼠标操作逻辑（根据编辑器配置）
+      // zoomEventType、tiltEventType、rotateEventType
+      const controlsConfig = editorConfig.controls
+      const sscController = viewer.value.scene.screenSpaceCameraController
+      if (controlsConfig) {
+        // 缩放事件类型
+        sscController.zoomEventTypes = [Cesium.CameraEventType[controlsConfig.zoomEventType] || Cesium.CameraEventType.WHEEL]
+        // 倾斜事件类型
+        sscController.tiltEventTypes = [Cesium.CameraEventType[controlsConfig.tiltEventType] || Cesium.CameraEventType.RIGHT_DRAG]
+        // 旋转事件类型
+        sscController.rotateEventTypes = [Cesium.CameraEventType[controlsConfig.rotateEventType] || Cesium.CameraEventType.LEFT_DRAG]
+      }
 
       // 配置场景参数
       configureScene()
@@ -74,25 +96,47 @@ export function useScene() {
   const configureScene = () => {
     if (!scene.value) return
 
-    // 启用深度测试
-    scene.value.globe.depthTestAgainstTerrain = true
-    
+    // 获取编辑器配置
+    const { editorConfig } = useEditorConfig()
+
+    // 鼠标操作逻辑配置（根据 editorConfig.controls 设置）
+    const controlsConfig = editorConfig.controls
+    const sscController = scene.value.screenSpaceCameraController
+    if (controlsConfig && sscController) {
+      // 缩放事件类型
+      sscController.zoomEventTypes = [Cesium.CameraEventType[controlsConfig.zoomEventType] || Cesium.CameraEventType.WHEEL]
+      // 倾斜事件类型
+      sscController.tiltEventTypes = [Cesium.CameraEventType[controlsConfig.tiltEventType] || Cesium.CameraEventType.RIGHT_DRAG]
+      // 旋转事件类型
+      sscController.rotateEventTypes = [Cesium.CameraEventType[controlsConfig.rotateEventType] || Cesium.CameraEventType.LEFT_DRAG]
+    }
+
+    // 启用深度测试（根据配置）
+    scene.value.globe.depthTestAgainstTerrain = !!editorConfig.map.depthTest
+
     // 配置大气效果
-    scene.value.skyAtmosphere.show = true
-    
-    // 配置雾效果
+    scene.value.skyAtmosphere.show = !!editorConfig.map.atmosphere
+
+    // 配置雾效果（始终开启，密度可后续配置）
     scene.value.fog.enabled = true
     scene.value.fog.density = 0.0002
-    
+
     // 配置光照
-    scene.value.globe.enableLighting = true
-    
-    // 配置地下模式（如果需要）
-    scene.value.underground = false
-    
+    scene.value.globe.enableLighting = !!editorConfig.map.lighting
+
+    // 配置地下模式
+    scene.value.underground = !!editorConfig.map.underground
+
     // 使用新版 verticalExaggeration 替代 Globe.terrainExaggeration
     scene.value.verticalExaggeration = 1.0
     scene.value.verticalExaggerationRelativeHeight = 0.0
+
+    // 配置天空盒（新版 Cesium 需自定义 SkyBox，预留）
+    // scene.value.skyBox.show = !!editorConfig.map.skybox
+
+    // 配置影像/地形（预留，需在 Viewer 初始化时处理）
+    // imagery: editorConfig.map.imagery
+    // terrain: editorConfig.map.terrain
   }
 
   /**

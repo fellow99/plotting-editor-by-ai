@@ -9,46 +9,35 @@ import { ref, reactive, watch } from 'vue'
 const defaultConfig = {
   // 视图配置
   view: {
-    showGrid: false,
-    showAxis: false,
-    backgroundColor: '#1e1e1e',
-    wireframe: false
-  },
-  
-  // 渲染配置
-  render: {
-    shadows: true,
-    fog: true,
-    antialias: true,
-    physicallyCorrectLights: true
-  },
-  
-  // 控制器配置
-  controls: {
-    enableDamping: true,
-    dampingFactor: 0.1,
-    enableZoom: true,
-    enableRotate: true,
-    enablePan: true,
-    autoRotate: false,
-    autoRotateSpeed: 2.0
-  },
-  
-  // 性能配置
-  performance: {
-    enableStats: false,
-    maxFPS: 60,
-    renderOnDemand: false
+    baseLayerPicker: true, // 是否显示图层选择器
   },
   
   // 地图配置
   map: {
+    imagery: true,
     terrain: true,
+    skybox: true,
     atmosphere: true,
     lighting: true,
     underground: false,
     depthTest: true
-  }
+  },
+
+  // 控制器配置
+  controls: {
+    zoomEventType: 'WHEEL', // 支持的缩放事件类型
+    tiltEventType: 'RIGHT_DRAG', // 支持的倾斜事件类型
+    rotateEventType: 'LEFT_DRAG', // 支持的旋转事件类型
+  },
+
+  // 渲染配置
+  webgl: {
+    alpha: true, // 是否包含alpha通道
+    depth: true, // 是否包含深度缓冲区
+    stencil: true, // 是否包含模板缓冲区
+    antialias: true, // 是否执行抗锯齿
+  },
+  
 }
 
 // 全局配置状态
