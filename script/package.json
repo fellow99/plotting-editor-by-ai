@@ -1,14 +1,15 @@
 {
-  "name": "plotting-editor-scripts",
+  "name": "three-editor-scripts",
   "private": false,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "vfs-server": "node ./vfs-server.js",
-    "generate-vfs": "node ./generate-vfs.js plotting-editor-by-ai /vfs ../public/vfs"
+    "generate-vfs": "node ./generate-vfs.js three-editor-by-ai /vfs ../public/vfs"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "multer": "^2.0.2"
   }
 }
