@@ -30,7 +30,24 @@ onMounted(async () => {
     if (cesiumContainer.value) {
       await initViewer(cesiumContainer.value)
       isLoading.value = false
-      
+
+      // 自动加载localStorage暂存标绘信息
+      /**
+       * 初始化完成后自动加载localStorage中的标绘数据
+       * key: plotting-editor-by-ai_editorPlot
+       */
+      const plotJson = localStorage.getItem('plotting-editor-by-ai_editorPlot')
+      if (plotJson) {
+        try {
+          const geojson = JSON.parse(plotJson)
+          // 加载标绘数据
+          const { loadPlot } = useViewer()
+          loadPlot(geojson)
+        } catch (e) {
+          // 格式错误不处理
+        }
+      }
+
       // 设置事件监听
       setupEvents()
     } else {

@@ -6,6 +6,7 @@
 <script setup>
 import { ref } from 'vue'
 import EditorConfigDialog from '../dialog/EditorConfigDialog.vue'
+import { useViewer } from '../../composables/useViewer.js'
 
 /**
  * 编辑器配置对话框显示状态
@@ -38,17 +39,29 @@ const canUndo = ref(false)
 const canRedo = ref(false)
 
 /**
- * 新建项目（预留功能）
+ * 新建标绘项目
+ * 清空所有标绘实体
  */
 function newPlot() {
-  // TODO: 实现新建项目
+  /**
+   * 新建标绘项目，清空所有标绘实体
+   */
+  const { clearPlot } = useViewer()
+  clearPlot()
 }
-
 /**
- * 暂存项目到本地（预留功能）
+ * 暂存标绘到本地localStorage
+ * 保存GeoJSON数据，key为plotting-editor-by-ai_editorPlot
  */
 function saveLocal() {
-  // TODO: 实现暂存到本地
+  /**
+   * 暂存标绘到本地localStorage
+   */
+  const { exportPlot } = useViewer()
+  const geojson = exportPlot()
+  if (geojson) {
+    localStorage.setItem('plotting-editor-by-ai_editorPlot', JSON.stringify(geojson))
+  }
 }
 
 /**
@@ -66,17 +79,50 @@ function loadPlot() {
 }
 
 /**
- * 导出项目（预留功能）
+ * 导出标绘为GeoJSON文件
  */
 function exportPlot() {
-  // TODO: 实现导出项目
+  /**
+   * 导出标绘为GeoJSON文件
+   */
+  const { exportPlot } = useViewer()
+  const geojson = exportPlot()
+  if (geojson) {
+    const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `plot_${new Date().toISOString().replace(/[:-]/g, '').slice(0, 15)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 }
 
 /**
- * 导入项目（预留功能）
+ * 导入GeoJSON标绘文件
  */
 function importPlot() {
-  // TODO: 实现导入项目
+  /**
+   * 导入GeoJSON标绘文件
+   */
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = '.json'
+  input.onchange = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      file.text().then(text => {
+        try {
+          const geojson = JSON.parse(text)
+          const { loadPlot } = useViewer()
+          loadPlot(geojson)
+        } catch (e) {
+          // 可弹窗提示格式错误
+        }
+      })
+    }
+  }
+  input.click()
 }
 
 /**

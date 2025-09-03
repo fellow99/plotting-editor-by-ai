@@ -38,7 +38,7 @@ plotting-editor-by-ai/
 │   ├── components/                           # Vue 组件
 │   │   ├── editor/                           # 编辑器 UI 组件
 │   │   │   ├── PropertyPanel.vue             # 属性面板
-│   │   │   ├── Toolbar.vue                   # 工具栏
+│   │   │   ├── Toolbar.vue                   # 工具栏（支持新建、暂存、导出、导入标绘，集成localStorage与GeoJSON）
 │   │   │   ├── EditorFooter.vue              # 编辑器底部状态栏
 │   │   │   ├── ResourcePanel.vue             # 资源面板
 │   │   │   ├── FeatureBrowser.vue            # 标绘资源浏览组件
@@ -50,7 +50,7 @@ plotting-editor-by-ai/
 │   │   ├── dialog/                           # 各类对话框组件
 │   │   │   ├── EditorConfigDialog.vue        # 编辑器配置对话框
 │   │   ├── cesium/                           # 3D 标绘环境组件
-│   │   │   ├── CesiumViewer.vue              # 地图环境主视图
+│   │   │   ├── CesiumViewer.vue              # 地图环境主视图（初始化后自动加载localStorage暂存标绘信息）
 │   ├── composables/                          # Vue Composition API 可组合函数
 │   │   ├── useViewer.js                      # Cesium Viewer对象管理
 │   │   ├── useObjectSelection.js             # 对象选择功能
