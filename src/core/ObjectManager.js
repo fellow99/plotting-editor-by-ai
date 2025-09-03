@@ -5,9 +5,15 @@
  */
 import * as Cesium from 'cesium';
 
+/**
+ * 对象管理器
+ * 基于Cesium的实体对象管理核心逻辑
+ * 支持对象的增删改查、序列化导入导出等功能
+ * 只依赖viewer实例，不再依赖plotManager
+ */
 export class ObjectManager {
-  constructor(plotManager) {
-    this.plotManager = plotManager;
+  constructor(viewer) {
+    this.viewer = viewer;
     this.objects = new Map(); // 对象缓存 ID -> Entity
     this.objectMetadata = new Map(); // 对象元数据 ID -> metadata
     this.eventCallbacks = new Map(); // 事件回调
@@ -265,12 +271,12 @@ export class ObjectManager {
    * 添加实体到场景
    */
   addEntity(entityOptions) {
-    if (!this.plotManager?.viewer) {
-      throw new Error('标绘环境管理器未初始化');
+    if (!this.viewer) {
+      throw new Error('viewer实例未初始化');
     }
 
     try {
-      const entity = this.plotManager.viewer.entities.add(entityOptions);
+      const entity = this.viewer.entities.add(entityOptions);
       
       // 缓存对象
       this.objects.set(entity.id, entity);
@@ -297,10 +303,10 @@ export class ObjectManager {
    * 移除实体
    */
   removeEntity(entity) {
-    if (!entity || !this.plotManager?.viewer) return false;
+    if (!entity || !this.viewer) return false;
 
     try {
-      const result = this.plotManager.viewer.entities.remove(entity);
+      const result = this.viewer.entities.remove(entity);
       
       if (result) {
         // 清理缓存
@@ -346,10 +352,10 @@ export class ObjectManager {
    * 清空所有实体
    */
   clearAll() {
-    if (!this.plotManager?.viewer) return;
+    if (!this.viewer) return;
 
     try {
-      this.plotManager.viewer.entities.removeAll();
+      this.viewer.entities.removeAll();
       this.objects.clear();
       this.objectMetadata.clear();
       

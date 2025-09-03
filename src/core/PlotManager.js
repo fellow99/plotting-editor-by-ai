@@ -1,155 +1,25 @@
 /**
- * 场景管理器
- * 基于Cesium场景管理核心逻辑
- * 使用新版API，不依赖ready和readyPromise，移除内置RequireJS
- * 
+ * 标绘管理器
  * 标绘数据结构采用GeoJSON标准，并在Feature和FeatureCollection对象上扩展userData字段用于存储编辑器专用附加信息。
  * 新增函数：
- * - clearPlot(): 清空场景所有实体
- * - exportPlot(): 导出场景数据为GeoJSON+userData结构
- * - loadPlot(json): 加载GeoJSON结构场景数据并重建场景
+ * - clearPlot(): 清空标绘所有实体
+ * - exportPlot(): 导出标绘数据为GeoJSON+userData结构
+ * - loadPlot(json): 加载GeoJSON结构标绘数据并重建标绘
  */
 import * as Cesium from 'cesium';
-import { DEFAULT_VIEWER_OPTIONS } from '../constants/DEFAULT_VIEWER_OPTIONS.js';
-import { DEFAULT_CAMERA } from '../constants/DEFAULT_CAMERA.js';
 
+/**
+ * 标绘管理器
+ * 仅负责标绘数据管理与导入导出，不再直接管理地图实例
+ * 地图对象创建与操作通过注入的 ObjectManager 实例完成
+ */
 export class PlotManager {
-  constructor() {
-    this.viewer = null;
-    this.scene = null;
-    this.camera = null;
+  constructor(objectManager) {
+    this.objectManager = objectManager;
     this.eventHandlers = new Map();
     this.isInitialized = false;
   }
 
-  /**
-   * 初始化场景
-   */
-  async initialize(container, options = {}) {
-    try {
-      // 合并默认选项和用户选项
-      const viewerOptions = {
-        ...DEFAULT_VIEWER_OPTIONS,
-        ...options
-      };
-
-      // 创建Cesium Viewer - 使用新版API，不依赖ready
-      this.viewer = new Cesium.Viewer(container, viewerOptions);
-      this.scene = this.viewer.scene;
-      this.camera = this.viewer.camera;
-
-      // 配置场景基础设置
-      this.setupScene();
-
-      // 设置默认相机位置
-      this.setDefaultCameraView();
-
-      // 设置事件监听
-      this.setupEventHandlers();
-
-      this.isInitialized = true;
-
-      return this.viewer;
-
-    } catch (error) {
-      console.error('初始化Cesium场景失败:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * 配置场景基础设置
-   */
-  setupScene() {
-    if (!this.scene) return;
-
-    try {
-      // 使用新版API配置场景
-      // 基础渲染设置
-      this.scene.globe.enableLighting = true;
-      this.scene.globe.dynamicAtmosphereLighting = true;
-      this.scene.globe.dynamicAtmosphereLightingFromSun = false;
-
-      // 使用新版verticalExaggeration替代Globe.terrainExaggeration
-      this.scene.verticalExaggeration = 1.0;
-
-      // 大气效果设置
-      this.scene.skyAtmosphere.show = true;
-      this.scene.skyBox.show = true;
-      this.scene.fog.enabled = true;
-
-      // 阴影设置（默认关闭以提高性能）
-      this.scene.shadowMap.enabled = false;
-
-      // 相机控制器设置
-      const controller = this.scene.screenSpaceCameraController;
-      controller.enableCollisionDetection = true;
-      controller.minimumZoomDistance = 1.0;
-      controller.maximumZoomDistance = 40075017.0;
-
-      // 帧率和性能设置
-      this.scene.maximumRenderTimeChange = 0.0;
-
-    } catch (error) {
-      console.error('配置场景设置失败:', error);
-    }
-  }
-
-  /**
-   * 设置默认相机视角
-   */
-  setDefaultCameraView() {
-    if (!this.camera) return;
-
-    try {
-      const { destination, orientation } = DEFAULT_CAMERA;
-      
-      this.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(
-          destination.longitude,
-          destination.latitude,
-          destination.height
-        ),
-        orientation: {
-          heading: Cesium.Math.toRadians(orientation.heading),
-          pitch: Cesium.Math.toRadians(orientation.pitch),
-          roll: Cesium.Math.toRadians(orientation.roll)
-        }
-      });
-
-    } catch (error) {
-      console.error('设置默认相机视角失败:', error);
-    }
-  }
-
-  /**
-   * 设置事件监听器
-   */
-  setupEventHandlers() {
-    if (!this.viewer) return;
-
-    try {
-      // 鼠标点击事件
-      this.eventHandlers.set('leftClick', this.viewer.cesiumWidget.screenSpaceEventHandler.setInputAction(
-        this.onLeftClick.bind(this),
-        Cesium.ScreenSpaceEventType.LEFT_CLICK
-      ));
-
-      // 鼠标移动事件
-      this.eventHandlers.set('mouseMove', this.viewer.cesiumWidget.screenSpaceEventHandler.setInputAction(
-        this.onMouseMove.bind(this),
-        Cesium.ScreenSpaceEventType.MOUSE_MOVE
-      ));
-
-      // 相机移动事件
-      this.eventHandlers.set('cameraChanged', this.camera.changed.addEventListener(
-        this.onCameraChanged.bind(this)
-      ));
-
-    } catch (error) {
-      console.error('设置事件监听器失败:', error);
-    }
-  }
 
   /**
    * 鼠标左键点击事件处理
@@ -246,13 +116,16 @@ export class PlotManager {
   }
 
   /**
-   * 添加实体到场景
+   * 添加实体到标绘
+   */
+  /**
+   * 通过 ObjectManager 创建地图实体
    */
   addEntity(entityOptions) {
-    if (!this.viewer) return null;
+    if (!this.objectManager) return null;
 
     try {
-      const entity = this.viewer.entities.add(entityOptions);
+      const entity = this.objectManager.addEntity(entityOptions);
       this.emit('entityAdded', { entity });
       return entity;
 
@@ -263,13 +136,16 @@ export class PlotManager {
   }
 
   /**
-   * 从场景中移除实体
+   * 从标绘中移除实体
+   */
+  /**
+   * 通过 ObjectManager 移除地图实体
    */
   removeEntity(entity) {
-    if (!this.viewer || !entity) return false;
+    if (!this.objectManager || !entity) return false;
 
     try {
-      const result = this.viewer.entities.remove(entity);
+      const result = this.objectManager.removeEntity(entity);
       if (result) {
         this.emit('entityRemoved', { entity });
       }
@@ -284,11 +160,14 @@ export class PlotManager {
   /**
    * 清空所有实体
    */
+  /**
+   * 通过 ObjectManager 清空所有地图实体
+   */
   clearEntities() {
-    if (!this.viewer) return;
+    if (!this.objectManager) return;
 
     try {
-      this.viewer.entities.removeAll();
+      this.objectManager.clearAll();
       this.emit('entitiesCleared');
 
     } catch (error) {
@@ -296,52 +175,6 @@ export class PlotManager {
     }
   }
 
-  /**
-   * 飞行到指定位置
-   */
-  flyTo(destination, options = {}) {
-    if (!this.viewer || !destination) return Promise.resolve();
-
-    try {
-      return this.viewer.camera.flyTo({
-        destination,
-        orientation: options.orientation,
-        duration: options.duration || 3.0,
-        complete: options.complete,
-        cancel: options.cancel,
-        endTransform: options.endTransform,
-        maximumHeight: options.maximumHeight,
-        pitchAdjustHeight: options.pitchAdjustHeight,
-        flyOverLongitude: options.flyOverLongitude,
-        flyOverLongitudeWeight: options.flyOverLongitudeWeight,
-        convert: options.convert !== false,
-        easingFunction: options.easingFunction
-      });
-
-    } catch (error) {
-      console.error('飞行到位置失败:', error);
-      return Promise.reject(error);
-    }
-  }
-
-  /**
-   * 聚焦到实体
-   */
-  focusEntity(entity, options = {}) {
-    if (!this.viewer || !entity) return Promise.resolve();
-
-    try {
-      return this.viewer.flyTo(entity, {
-        duration: options.duration || 2.0,
-        maximumHeight: options.maximumHeight,
-        offset: options.offset
-      });
-
-    } catch (error) {
-      console.error('聚焦实体失败:', error);
-      return Promise.reject(error);
-    }
-  }
 
   /**
    * 事件发射器
@@ -361,33 +194,42 @@ export class PlotManager {
   }
 
   /**
-   * 清空场景所有实体
-   * 用于场景重置
+   * 清空标绘所有实体
+   * 用于标绘重置
+   */
+  /**
+   * 清空标绘所有实体
    */
   clearPlot() {
-    if (!this.viewer) return;
+    if (!this.objectManager) return;
     try {
-      this.viewer.entities.removeAll();
+      this.objectManager.clearAll();
       this.emit('entitiesCleared');
     } catch (error) {
-      console.error('清空场景失败:', error);
+      console.error('清空标绘失败:', error);
     }
   }
 
   /**
-   * 导出场景数据为GeoJSON+userData结构
+   * 导出标绘数据为GeoJSON+userData结构
+   * @returns {Object} GeoJSON FeatureCollection
+   */
+  /**
+   * 导出标绘数据为GeoJSON+userData结构
    * @returns {Object} GeoJSON FeatureCollection
    */
   exportPlot() {
-    if (!this.viewer) return null;
+    if (!this.objectManager) return null;
     try {
+      // 通过 ObjectManager 获取所有实体
+      const entities = this.objectManager.getAllEntities();
       // 构建GeoJSON FeatureCollection
       const geojson = {
         type: 'FeatureCollection',
         features: [],
-        userData: {} // 可根据需求填充场景级附加信息
+        userData: {} // 可根据需求填充标绘级附加信息
       };
-      this.viewer.entities.values.forEach(entity => {
+      entities.forEach(entity => {
         // 仅导出可见实体
         if (!entity.show) return;
         // 判断类型并转换为GeoJSON geometry
@@ -467,27 +309,31 @@ export class PlotManager {
         };
         geojson.features.push(feature);
       });
-      // 可扩展场景级userData
+      // 可扩展标绘级userData
       geojson.userData = {
         exportedAt: Date.now()
-        // ...其他场景附加信息
+        // ...其他标绘附加信息
       };
       return geojson;
     } catch (error) {
-      console.error('导出场景失败:', error);
+      console.error('导出标绘失败:', error);
       return null;
     }
   }
 
   /**
-   * 加载GeoJSON结构场景数据并重建场景
+   * 加载GeoJSON结构标绘数据并重建标绘
+   * @param {Object} geojson - 标绘数据
+   */
+  /**
+   * 加载GeoJSON结构标绘数据并重建标绘
    * @param {Object} geojson - 标绘数据
    */
   loadPlot(geojson) {
-    if (!this.viewer || !geojson || geojson.type !== 'FeatureCollection') return;
+    if (!this.objectManager || !geojson || geojson.type !== 'FeatureCollection') return;
     try {
       // 清空现有实体
-      this.viewer.entities.removeAll();
+      this.objectManager.clearAll();
       // 遍历Feature重建实体
       geojson.features.forEach(feature => {
         let entityOptions = {
@@ -530,44 +376,29 @@ export class PlotManager {
         }
         // 其他类型可扩展...
 
-        this.viewer.entities.add(entityOptions);
+        this.objectManager.addEntity(entityOptions);
       });
-      // 可处理场景级userData
+      // 可处理标绘级userData
       this.emit('sceneLoaded', { geojson });
     } catch (error) {
-      console.error('加载场景失败:', error);
+      console.error('加载标绘失败:', error);
     }
   }
 
   /**
-   * 销毁场景管理器
+   * 销毁标绘管理器
+   */
+  /**
+   * 销毁标绘管理器
    */
   destroy() {
     try {
-      // 清理事件监听器
-      if (this.viewer && this.eventHandlers.size > 0) {
-        this.eventHandlers.forEach((handler, key) => {
-          if (typeof handler === 'function') {
-            handler();
-          }
-        });
-        this.eventHandlers.clear();
-      }
-
-      // 销毁Viewer
-      if (this.viewer) {
-        this.viewer.destroy();
-        this.viewer = null;
-      }
-
-      // 清理引用
-      this.scene = null;
-      this.camera = null;
+      this.eventHandlers.clear();
+      this.objectManager = null;
       this.isInitialized = false;
       this.onEvent = null;
-
     } catch (error) {
-      console.error('销毁场景管理器失败:', error);
+      console.error('销毁标绘管理器失败:', error);
     }
   }
 }

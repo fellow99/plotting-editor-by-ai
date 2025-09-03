@@ -3,18 +3,29 @@
  * 使用新版Cesium API，不依赖ready和readyPromise
  */
 
+/**
+ * 地图环境管理可组合函数
+ * 使用新版Cesium API，不依赖ready和readyPromise
+ * 统一管理地图实例、ObjectManager、PlotManager单例，并输出标绘相关方法
+ */
 import { ref, reactive, shallowRef } from 'vue'
 import * as Cesium from 'cesium'
 import DEFAULT_VIEWER_OPTIONS from '../constants/DEFAULT_VIEWER_OPTIONS.js'
 import DEFAULT_CAMERA from '../constants/DEFAULT_CAMERA.js'
 import DEFAULT_CENTER from '../constants/DEFAULT_CENTER.js'
 import { useEditorConfig } from './useEditorConfig.js' // 引入编辑器配置
+import { ObjectManager } from '../core/ObjectManager.js'
+import { PlotManager } from '../core/PlotManager.js'
 
 // 全局状态 - Cesium库的对象使用shallowRef
-const viewer = shallowRef(null)
+const viewer = shallowRef(null) // Cesium地图实例
 const scene = shallowRef(null)
 const camera = shallowRef(null)
 const isInitialized = ref(false)
+
+// 管理器单例
+const objectManager = shallowRef(null) // 地图对象管理器
+const plotManager = shallowRef(null)   // 标绘管理器
 
 /**
  * 标绘环境管理可组合函数
@@ -23,6 +34,10 @@ export function useViewer() {
   
   /**
    * 初始化 Cesium Viewer
+   * @param {HTMLElement} container - 容器元素
+   */
+  /**
+   * 初始化 Cesium Viewer，并创建 ObjectManager、PlotManager 单例
    * @param {HTMLElement} container - 容器元素
    */
   const initViewer = async (container) => {
@@ -36,54 +51,34 @@ export function useViewer() {
         throw new Error('Container element is required but was not provided')
       }
 
-      // 设置 Cesium 访问令牌（如果需要）
-      // Cesium.Ion.defaultAccessToken = 'your_access_token_here'
-
       // 获取编辑器配置
       const { editorConfig } = useEditorConfig()
 
       // 基于 DEFAULT_VIEWER_OPTIONS 混合 editorConfig.map 配置
       const options = {
         ...DEFAULT_VIEWER_OPTIONS,
-        // 影像图层配置
         imageryProvider: editorConfig.map.imagery ? undefined : false,
-        // 地形配置
         terrainProvider: editorConfig.map.terrain ? undefined : false,
-        // 天空盒配置（新版 Cesium 需自定义 SkyBox，预留）
-        // skyBox: editorConfig.map.skybox ? undefined : false,
-        // 性能配置
         requestRenderMode: true,
         maximumRenderTimeChange: Infinity
       }
 
-      // 创建 Viewer，使用最终配置
+      // 创建 Viewer
       viewer.value = new Cesium.Viewer(container, options)
-
-      // 获取scene和相机引用
       scene.value = viewer.value.scene
       camera.value = viewer.value.camera
 
-      // 设置鼠标操作逻辑（根据编辑器配置）
-      // zoomEventType、tiltEventType、rotateEventType
-      const controlsConfig = editorConfig.controls
-      const sscController = viewer.value.scene.screenSpaceCameraController
-      if (controlsConfig) {
-        // 缩放事件类型
-        sscController.zoomEventTypes = [Cesium.CameraEventType[controlsConfig.zoomEventType] || Cesium.CameraEventType.WHEEL]
-        // 倾斜事件类型
-        sscController.tiltEventTypes = [Cesium.CameraEventType[controlsConfig.tiltEventType] || Cesium.CameraEventType.RIGHT_DRAG]
-        // 旋转事件类型
-        sscController.rotateEventTypes = [Cesium.CameraEventType[controlsConfig.rotateEventType] || Cesium.CameraEventType.LEFT_DRAG]
-      }
+      // 创建 ObjectManager 单例
+      objectManager.value = new ObjectManager(viewer.value)
+      // 创建 PlotManager 单例，注入 ObjectManager
+      plotManager.value = new PlotManager(objectManager.value)
 
       // 配置参数
       configureViewer()
-      
-      // 设置默认视角
       setDefaultView()
 
       isInitialized.value = true
-      
+
     } catch (error) {
       throw error
     }
@@ -282,13 +277,35 @@ export function useViewer() {
     }
   }
 
+  /**
+   * 标绘相关方法输出
+   */
+  const clearPlot = () => {
+    if (plotManager.value) {
+      plotManager.value.clearPlot()
+    }
+  }
+  const exportPlot = () => {
+    if (plotManager.value) {
+      return plotManager.value.exportPlot()
+    }
+    return null
+  }
+  const loadPlot = (json) => {
+    if (plotManager.value) {
+      plotManager.value.loadPlot(json)
+    }
+  }
+
   return {
     // 状态
     viewer,
     scene,
     camera,
     isInitialized,
-    
+    objectManager,
+    plotManager,
+
     // 方法
     initViewer,
     destroyViewer,
@@ -300,6 +317,11 @@ export function useViewer() {
     clearEntities,
     pickPosition,
     takeScreenshot,
-    getDefaultConfigs
+    getDefaultConfigs,
+
+    // 标绘相关方法
+    clearPlot,
+    exportPlot,
+    loadPlot
   }
 }

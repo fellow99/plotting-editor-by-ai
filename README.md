@@ -57,7 +57,7 @@ plotting-editor-by-ai/
 │   │   ├── useAssets.js                      # 资源管理
 │   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
 │   ├── core/                                 # 核心 Cesium 逻辑
-│   │   ├── PlotManager.js                    # 标绘环境管理器
+│   │   ├── PlotManager.js                    # 标绘信息管理器
 │   │   ├── ObjectManager.js                  # 对象管理器
 │   ├── services/                             # 数据请求和外部接口
 │   │   ├── static-drive-api.js               # 静态文件系统封装
