@@ -14,7 +14,7 @@
 - 每次新增、删除文件，都需要修改/README.md文件的项目结构。注意，/src/assets目录内容变更不需要/README.md；
 
 ### CESIUM_CHANGELOG.md
-- 当前使用的Cesium版本是1.132.0
+- 当前使用的Cesium版本：^1.132
 - 调用Cesium的功能时，注意使用新版写法；
 - 特别注意Cesium已经移除大部分的 ready 和 readyPromise、移除内置的 RequireJS；
 - Cesium库的对象在Vue环境中都用shallowRef来引用，而不用ref，除非特殊说明；

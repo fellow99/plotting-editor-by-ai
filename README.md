@@ -106,7 +106,7 @@ plotting-editor-by-ai/
 
 - **响应式状态**: 使用 Vue 3 Composition API 管理应用状态
 - **模块化设计**: 清晰的代码组织和职责分离
-- **Cesium 集成**: 基于 Cesium 1.132.0，使用最新 API（移除 ready/readyPromise，使用 baseLayer 等）
+- **Cesium 集成**: 基于 Cesium（^1.132），使用最新 API（移除 ready/readyPromise，使用 baseLayer 等）
 - **类型安全**: 良好的代码结构支持 TypeScript 迁移
 - **性能优化**: 合理的组件懒加载和渲染优化
 
@@ -163,7 +163,7 @@ plotting-editor-by-ai/
   - loadPlot(json): 加载GeoJSON结构标绘环境数据，根据json内容重建实体
 
 ### 标绘环境管理 (useViewer.js)
-- 基于 Cesium 1.132.0 的标绘环境初始化和管理
+- 基于 Cesium的标绘环境初始化和管理
 - 支持实体的添加、删除和管理
 - 提供地理坐标拾取功能
 - 集成地形、大气、光照等渲染效果

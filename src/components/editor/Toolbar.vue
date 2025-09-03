@@ -40,7 +40,7 @@ const canRedo = ref(false)
 /**
  * 新建项目（预留功能）
  */
-function newProject() {
+function newPlot() {
   // TODO: 实现新建项目
 }
 
@@ -54,28 +54,28 @@ function saveLocal() {
 /**
  * 保存项目（预留功能）
  */
-function saveProject() {
+function savePlot() {
   // TODO: 实现保存项目
 }
 
 /**
  * 加载项目（预留功能）
  */
-function loadProject() {
+function loadPlot() {
   // TODO: 实现加载项目
 }
 
 /**
  * 导出项目（预留功能）
  */
-function exportProject() {
+function exportPlot() {
   // TODO: 实现导出项目
 }
 
 /**
  * 导入项目（预留功能）
  */
-function importProject() {
+function importPlot() {
   // TODO: 实现导入项目
 }
 
@@ -144,7 +144,7 @@ function openEditorConfig() {
       <div class="ribbon-group">
         <div class="ribbon-group-title">文件</div>
         <div class="ribbon-group-buttons">
-          <button class="ribbon-btn" @click="newProject" title="新建项目">
+          <button class="ribbon-btn" @click="newPlot" title="新建项目">
             <span class="icon">📄</span>
             <div>新建</div>
           </button>
@@ -152,19 +152,19 @@ function openEditorConfig() {
             <span class="icon">🗄️</span>
             <div>暂存</div>
           </button>
-          <button class="ribbon-btn" @click="saveProject" title="保存项目">
+          <button class="ribbon-btn" @click="savePlot" title="保存项目">
             <span class="icon">💾</span>
             <div>保存</div>
           </button>
-          <button class="ribbon-btn" @click="loadProject" title="加载项目">
+          <button class="ribbon-btn" @click="loadPlot" title="加载项目">
             <span class="icon">📂</span>
             <div>加载</div>
           </button>
-          <button class="ribbon-btn" @click="exportProject" title="导出项目">
+          <button class="ribbon-btn" @click="exportPlot" title="导出项目">
             <span class="icon">📤</span>
             <div>导出</div>
           </button>
-          <button class="ribbon-btn" @click="importProject" title="导入项目">
+          <button class="ribbon-btn" @click="importPlot" title="导入项目">
             <span class="icon">📥</span>
             <div>导入</div>
           </button>

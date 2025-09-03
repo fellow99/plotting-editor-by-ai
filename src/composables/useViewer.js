@@ -1,6 +1,6 @@
 /**
- * 标绘环境管理可组合函数
- * 使用新版Cesium 1.132.0 API，不依赖ready和readyPromise
+ * 地图环境管理可组合函数
+ * 使用新版Cesium API，不依赖ready和readyPromise
  */
 
 import { ref, reactive, shallowRef } from 'vue'

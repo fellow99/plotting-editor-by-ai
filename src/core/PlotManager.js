@@ -1,6 +1,6 @@
 /**
  * 场景管理器
- * 基于Cesium 1.132.0的场景管理核心逻辑
+ * 基于Cesium场景管理核心逻辑
  * 使用新版API，不依赖ready和readyPromise，移除内置RequireJS
  * 
  * 标绘数据结构采用GeoJSON标准，并在Feature和FeatureCollection对象上扩展userData字段用于存储编辑器专用附加信息。
