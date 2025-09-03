@@ -41,7 +41,7 @@ plotting-editor-by-ai/
 │   │   │   ├── Toolbar.vue                   # 工具栏（支持新建、暂存、导出、导入标绘，集成localStorage与GeoJSON）
 │   │   │   ├── EditorFooter.vue              # 编辑器底部状态栏
 │   │   │   ├── ResourcePanel.vue             # 资源面板
-│   │   │   ├── FeatureBrowser.vue            # 标绘资源浏览组件
+│   │   │   ├── ResourceBrowser.vue           # 标绘资源浏览组件（点击选择资源，配合useDrawing管理绘制状态）
 │   │   │   ├── VfsFileBrowser.vue            # 虚拟文件系统面板
 │   │   │   ├── Inspector.vue                 # 对象检查器
 │   │   ├── property/                         # 各种属性编辑组件
@@ -56,6 +56,7 @@ plotting-editor-by-ai/
 │   │   ├── useObjectSelection.js             # 对象选择功能
 │   │   ├── useAssets.js                      # 资源管理
 │   │   ├── useEditorConfig.js                # 编辑器配置响应式状态与操作方法
+│   │   ├── useDrawing.js                     # 绘制状态管理（currentDrawing，设置/清空绘制资源）
 │   ├── core/                                 # 核心 Cesium 逻辑
 │   │   ├── PlotManager.js                    # 标绘信息管理器
 │   │   ├── ObjectManager.js                  # 对象管理器
@@ -71,6 +72,7 @@ plotting-editor-by-ai/
 │   │   ├── DEFAULT_VIEWER_OPTIONS.js         # 默认Viewer配置
 │   │   ├── DEFAULT_CENTER.js                 # 默认中心点配置
 │   │   ├── DEFAULT_CAMERA.js                 # 默认相机配置
+│   │   ├── RESOURCES.json                    # 标绘资源定义（类型、名称、图标等）
 │   ├── App.vue                               # 根组件（仅负责引入Editor.vue）
 │   ├── Editor.vue                            # 主编辑器组件（包含全部业务与UI）
 │   ├── main.js                               # 应用入口
@@ -168,7 +170,17 @@ plotting-editor-by-ai/
 - 提供地理坐标拾取功能
 - 集成地形、大气、光照等渲染效果
 
-### 拖拽标绘 (PlotViewer.vue)
+### 资源选择与绘制逻辑
+
+- 资源面板（ResourceBrowser.vue）展示所有可用标绘资源，点击资源后进入绘制状态（currentDrawing）。
+- 资源类型定义见src/constants/RESOURCES.json，支持point、line、polygon等类型。
+- 通过useDrawing.js统一管理当前绘制资源状态。
+- 不同资源类型的地图绘制方式如下：
+  - point（点）：点击地图任意位置，直接添加一个点实体。
+  - 其它类型（如line、polygon等）：暂未实现，后续扩展。
+- 取消原有拖拽放置方式，统一通过点击资源+地图操作实现标绘。
+
+### 拖拽标绘（已废弃，见上）
 - 支持从资源面板拖拽标绘对象到地图
 - 自动计算放置位置的地理坐标
 - 支持点、线、面、模型等多种标绘类型

@@ -1,13 +1,13 @@
 <!--
   资源面板组件
-  仅负责标签页切换与引用 FeatureBrowser、VfsFileBrowser、Inspector
-  标绘资源相关功能已抽取到 FeatureBrowser.vue
+仅负责标签页切换与引用 ResourceBrowser、VfsFileBrowser、Inspector
+标绘资源相关功能已抽取到 ResourceBrowser.vue
   Tabs: 标绘资源、文件系统、要素列表
   严格遵循 Vue 代码规范
 -->
 <script setup>
 import { ref } from 'vue'
-import FeatureBrowser from './FeatureBrowser.vue'
+import ResourceBrowser from './ResourceBrowser.vue'
 import VfsFileBrowser from './VfsFileBrowser.vue'
 import Inspector from './Inspector.vue'
 
@@ -38,7 +38,7 @@ const activeTab = ref('plotting')
     <div class="panel-content">
       <!-- 标绘资源 -->
       <div v-show="activeTab === 'plotting'">
-        <FeatureBrowser />
+        <ResourceBrowser />
       </div>
       <!-- 文件系统 -->
       <div v-show="activeTab === 'files'" class="file-browser">

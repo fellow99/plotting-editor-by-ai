@@ -1,0 +1,8 @@
+[
+  { "id": "point", "name": "点标绘", "type": "point", "icon": "📍", "category": "basic" },
+  { "id": "line", "name": "线标绘", "type": "line", "icon": "📏", "category": "basic" },
+  { "id": "polygon", "name": "面标绘", "type": "polygon", "icon": "🔷", "category": "basic" },
+  { "id": "circle", "name": "圆形", "type": "circle", "icon": "⭕", "category": "geometry" },
+  { "id": "rectangle", "name": "矩形", "type": "rectangle", "icon": "⬜", "category": "geometry" },
+  { "id": "text", "name": "文本标注", "type": "text", "icon": "📝", "category": "annotation" }
+]

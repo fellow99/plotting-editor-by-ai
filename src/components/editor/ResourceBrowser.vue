@@ -1,32 +1,22 @@
 <!--
   标绘资源浏览组件
-  功能：展示、拖拽标绘资源，供地图编辑器使用
+  功能：展示标绘资源，点击资源后设置当前绘制类型
   新语法：Vue3 <script setup>
   每个shallowRef变量均有用途注释，每个函数均有功能注释
+  plottingResources已抽取到src/constants/RESOURCES.json
 -->
 <script setup>
-/**
- * 标绘资源数据
- * 用于展示和拖拽
- */
-const plottingResources = [
-  { id: 'point', name: '点标绘', type: 'point', icon: '📍', category: 'basic' },
-  { id: 'line', name: '线标绘', type: 'line', icon: '📏', category: 'basic' },
-  { id: 'polygon', name: '面标绘', type: 'polygon', icon: '🔷', category: 'basic' },
-  { id: 'circle', name: '圆形', type: 'circle', icon: '⭕', category: 'geometry' },
-  { id: 'rectangle', name: '矩形', type: 'rectangle', icon: '⬜', category: 'geometry' },
-  { id: 'text', name: '文本标注', type: 'text', icon: '📝', category: 'annotation' }
-]
+import plottingResources from '../../constants/RESOURCES.json'
+import { useDrawing } from '../../composables/useDrawing'
 
 /**
- * 开始拖拽资源
- * @param {DragEvent} event 拖拽事件
+ * 资源点击事件
  * @param {object} resource 标绘资源对象
- * 用于地图拖放
+ * 设置当前绘制资源
  */
-function startDrag(event, resource) {
-  event.dataTransfer.setData('application/json', JSON.stringify(resource))
-  event.dataTransfer.effectAllowed = 'copy'
+const { setCurrentDrawing } = useDrawing()
+function handleResourceClick(resource) {
+  setCurrentDrawing(resource)
 }
 </script>
 
@@ -37,9 +27,7 @@ function startDrag(event, resource) {
         v-for="resource in plottingResources"
         :key="resource.id"
         class="resource-item"
-        draggable="true"
-        @dragstart="startDrag($event, resource)"
-        @click="() => $emit('resource-click', resource)"
+        @click="() => handleResourceClick(resource)"
       >
         <div class="resource-icon">{{ resource.icon }}</div>
         <div class="resource-name">{{ resource.name }}</div>
